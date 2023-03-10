@@ -1,4 +1,5 @@
-import React, { useContext, createContext, useState } from 'react';
+import React, { useContext, createContext, useState, useEffect } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
     getAllPhim
 } from '../services/ApiService';
@@ -6,6 +7,27 @@ import {
 export const ApiContext = createContext();
 export const ApiContextProvider = (props) => {
     const { children } = props;
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [nguoidung, setNguoidung] = useState({});
+
+
+    useEffect(() => {
+        try {
+            AsyncStorage.getItem('nguoidung')
+                .then(value => {
+                    const myObject = JSON.parse(value);
+                    setNguoidung(myObject);
+                    if (myObject == null) {
+                        setIsLoggedIn(false);
+                    } else {
+                        setIsLoggedIn(true);
+                    }
+                });
+        } catch (error) {
+            console.log(error)
+        }
+    }, [])
+
 
     const onGetAllPhim = async () => {
         try {
@@ -19,7 +41,7 @@ export const ApiContextProvider = (props) => {
     return (
         <ApiContext.Provider
             value={{
-                onGetAllPhim
+                isLoggedIn, setIsLoggedIn, onGetAllPhim, nguoidung, setNguoidung
             }}
         >
             {children}

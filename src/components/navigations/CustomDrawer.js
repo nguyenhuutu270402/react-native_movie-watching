@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View, ImageBackground, useWindowDimensions } from 'react-native';
 import React from 'react';
-import { DrawerContentScrollView, DrawerItemList } from '@react-navigation/drawer';
-import { Ionicons } from '@expo/vector-icons';
+import { DrawerContentScrollView, DrawerItemList, DrawerItem } from '@react-navigation/drawer';
+import { Ionicons, AntDesign } from '@expo/vector-icons';
 import { ScrollView } from 'react-navigation';
 //  https://static.chotot.com/storage/chotot-kinhnghiem/c2c/2019/10/nuoi-meo-can-gi-0-1024x713.jpg
 const CustomDrawer = (props) => {
