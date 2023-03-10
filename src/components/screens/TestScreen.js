@@ -7,7 +7,7 @@ const TestScreen = (props) => {
     const { navigation } = props;
     const { onGetAllPhim } = useContext(ApiContext);
     const [listPhim, setListPhim] = useState([]);
-
+    const linkvideo = 'https://firebasestorage.googleapis.com/v0/b/movie-watching-f4f73.appspot.com/o/phim%2Fnguoiconsotlaitap1.ts?alt=media&token=43a0ddd8-0456-40b4-b57b-7c4c4ca8abf1';
     const video = useRef(null);
     const [status, setStatus] = useState({});
 
@@ -29,7 +29,7 @@ const TestScreen = (props) => {
                 ref={video}
                 style={[styles.video]}
                 source={{
-                    uri: listPhim.video,
+                    uri: linkvideo,
                 }}
                 useNativeControls={true}
                 androidImmersive={true}
