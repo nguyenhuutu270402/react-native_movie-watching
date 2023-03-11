@@ -2,122 +2,138 @@ import { StyleSheet, Text, View, Image, TextInput, ImageBackground, Dimensions, 
 import { ApiContext } from '../contexts/ApiContext';
 import React, { useContext, useEffect, useState } from 'react';
 import { Ionicons, Feather, MaterialCommunityIcons, Entypo } from '@expo/vector-icons';
+import SpinnerOverlay from 'react-native-loading-spinner-overlay';
 
 const DangKyScreen = (props) => {
     const { navigation } = props;
     const { height, width } = useWindowDimensions();
-
     const { onAddUser } = useContext(ApiContext);
     const [isShowMatKhau, setIsShowMatKhau] = useState(true);
     const [isShowMatKhau2, setIsShowMatKhau2] = useState(true);
     const [email, setEmail] = useState('');
     const [matKhau, setMatKhau] = useState('');
     const [matKhauLai, setMatKhauLai] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
 
     const onDangKy = async () => {
+        setIsLoading(true);
         const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
         const checkEmail = re.test(String(email).toLowerCase());
         if (checkEmail == false) {
             ToastAndroid.show('Vui lòng nhập đúng email', ToastAndroid.CENTER);
+            setIsLoading(false);
             return;
         }
         else if (matKhau.indexOf(" ") !== -1) {
             ToastAndroid.show('Mật khẩu không được chứa dấu cách', ToastAndroid.CENTER);
+            setIsLoading(false);
             return;
         } else if (matKhau.length < 6) {
             ToastAndroid.show('Mật khẩu phải có ít nhất 6 ký tự', ToastAndroid.CENTER);
+            setIsLoading(false);
             return;
         } else if (matKhauLai !== matKhau) {
             ToastAndroid.show('Mật khẩu không trùng khớp', ToastAndroid.CENTER);
+            setIsLoading(false);
             return;
         }
         const response1 = await onAddUser(email.toLowerCase(), matKhau);
         const checkDangKy = response1.result;
         if (checkDangKy == false) {
             ToastAndroid.show('Email này đã được đăng ký', ToastAndroid.CENTER);
+            setIsLoading(false);
             return;
         } else if (checkDangKy == true) {
             ToastAndroid.show('Đăng ký thành công', ToastAndroid.CENTER);
             navigation.replace('DangNhapScreen');
         }
+        setIsLoading(false);
     }
 
     return (
-        <ScrollView>
-
-            <View style={[styles.container, { minHeight: height }]}>
-                <TouchableOpacity style={styles.boxIconBack} onPress={() => navigation.navigate("Trang Chủ")}>
-                    <Ionicons name="arrow-back-circle" size={30} color="white" />
-                </TouchableOpacity>
-                {/* <Image style={[styles.logo2,]} source={require('../../assets/images/healthicons_coins-outline.png')}></Image> */}
-                <Feather style={[styles.logo2]} name="film" size={70} color="rgba(32,172,125,0.5)" />
-                <Image style={[styles.logo, { width: width / 2, height: width / 4 }]} source={require('../../assets/images/login_logo.png')}></Image>
-                <View style={styles.boxAllTextInput}>
-                    <View style={styles.boxTextInput}>
-                        <MaterialCommunityIcons style={styles.iconTextInput} name="email-outline" size={24} color="white" />
-                        <TextInput
-                            style={styles.textInputEmail}
-                            placeholder='Email'
-                            cursorColor={'white'}
-                            placeholderTextColor={'#DDDDDD'}
-                            keyboardType='email-address'
-                            onChangeText={text => setEmail(text)} />
-                    </View>
-                    <View style={styles.line} />
-                    <View style={styles.boxTextInput}>
-                        <Feather style={styles.iconTextInput} name="lock" size={24} color="white" />
-                        <TextInput
-                            style={styles.textInputEmail}
-                            placeholder='Mật khẩu'
-                            cursorColor={'white'}
-                            placeholderTextColor={'#DDDDDD'}
-                            secureTextEntry={isShowMatKhau}
-                            onChangeText={text => setMatKhau(text)} />
-                        {
-                            isShowMatKhau === true ?
-                                <TouchableOpacity style={styles.iconShowPass} onPress={() => setIsShowMatKhau(false)}>
-                                    <Entypo name="eye" size={24} color="white" />
-                                </TouchableOpacity>
-                                :
-                                <TouchableOpacity style={styles.iconShowPass} onPress={() => setIsShowMatKhau(true)}>
-                                    <Entypo name="eye-with-line" size={24} color="white" />
-                                </TouchableOpacity>
-                        }
-                    </View>
-                    <View style={styles.line} />
-                    <View style={styles.boxTextInput}>
-                        <Feather style={styles.iconTextInput} name="lock" size={24} color="white" />
-                        <TextInput
-                            style={styles.textInputEmail}
-                            placeholder='Xác nhận mật khẩu'
-                            cursorColor={'white'}
-                            placeholderTextColor={'#DDDDDD'}
-                            secureTextEntry={isShowMatKhau2}
-                            onChangeText={text => setMatKhauLai(text)} />
-                        {
-                            isShowMatKhau2 === true ?
-                                <TouchableOpacity style={styles.iconShowPass} onPress={() => setIsShowMatKhau2(false)}>
-                                    <Entypo name="eye" size={24} color="white" />
-                                </TouchableOpacity>
-                                :
-                                <TouchableOpacity style={styles.iconShowPass} onPress={() => setIsShowMatKhau2(true)}>
-                                    <Entypo name="eye-with-line" size={24} color="white" />
-                                </TouchableOpacity>
-                        }
-                    </View>
-                </View>
-                <TouchableOpacity style={styles.btDangNhap} onPress={() => onDangKy()}>
-                    <Text style={styles.textBtDangNhap}>Đăng ký</Text>
-                </TouchableOpacity>
-                <View style={styles.boxDangKy}>
-                    <Text style={styles.textChuaCo}>Đã tài khoản?</Text>
-                    <TouchableOpacity style={styles.btDangKy} onPress={() => navigation.replace('DangNhapScreen')}>
-                        <Text style={styles.textDangKy}>Đăng nhập ngay</Text>
+        <View>
+            <ScrollView>
+                <View style={[styles.container, { minHeight: height }]}>
+                    <TouchableOpacity style={styles.boxIconBack} onPress={() => navigation.navigate("Trang Chủ")}>
+                        <Ionicons name="arrow-back-circle" size={30} color="white" />
                     </TouchableOpacity>
-                </View>
+                    {/* <Image style={[styles.logo2,]} source={require('../../assets/images/healthicons_coins-outline.png')}></Image> */}
+                    <Feather style={[styles.logo2]} name="film" size={70} color="rgba(32,172,125,0.5)" />
+                    <Image style={[styles.logo, { width: width / 2, height: width / 4 }]} source={require('../../assets/images/login_logo.png')}></Image>
+                    <View style={styles.boxAllTextInput}>
+                        <View style={styles.boxTextInput}>
+                            <MaterialCommunityIcons style={styles.iconTextInput} name="email-outline" size={24} color="white" />
+                            <TextInput
+                                style={styles.textInputEmail}
+                                placeholder='Email'
+                                cursorColor={'white'}
+                                placeholderTextColor={'#DDDDDD'}
+                                keyboardType='email-address'
+                                onChangeText={text => setEmail(text)} />
+                        </View>
+                        <View style={styles.line} />
+                        <View style={styles.boxTextInput}>
+                            <Feather style={styles.iconTextInput} name="lock" size={24} color="white" />
+                            <TextInput
+                                style={styles.textInputEmail}
+                                placeholder='Mật khẩu'
+                                cursorColor={'white'}
+                                placeholderTextColor={'#DDDDDD'}
+                                secureTextEntry={isShowMatKhau}
+                                onChangeText={text => setMatKhau(text)} />
+                            {
+                                isShowMatKhau === true ?
+                                    <TouchableOpacity style={styles.iconShowPass} onPress={() => setIsShowMatKhau(false)}>
+                                        <Entypo name="eye" size={24} color="white" />
+                                    </TouchableOpacity>
+                                    :
+                                    <TouchableOpacity style={styles.iconShowPass} onPress={() => setIsShowMatKhau(true)}>
+                                        <Entypo name="eye-with-line" size={24} color="white" />
+                                    </TouchableOpacity>
+                            }
+                        </View>
+                        <View style={styles.line} />
+                        <View style={styles.boxTextInput}>
+                            <Feather style={styles.iconTextInput} name="lock" size={24} color="white" />
+                            <TextInput
+                                style={styles.textInputEmail}
+                                placeholder='Xác nhận mật khẩu'
+                                cursorColor={'white'}
+                                placeholderTextColor={'#DDDDDD'}
+                                secureTextEntry={isShowMatKhau2}
+                                onChangeText={text => setMatKhauLai(text)} />
+                            {
+                                isShowMatKhau2 === true ?
+                                    <TouchableOpacity style={styles.iconShowPass} onPress={() => setIsShowMatKhau2(false)}>
+                                        <Entypo name="eye" size={24} color="white" />
+                                    </TouchableOpacity>
+                                    :
+                                    <TouchableOpacity style={styles.iconShowPass} onPress={() => setIsShowMatKhau2(true)}>
+                                        <Entypo name="eye-with-line" size={24} color="white" />
+                                    </TouchableOpacity>
+                            }
+                        </View>
+                    </View>
+                    <TouchableOpacity style={styles.btDangNhap} onPress={() => onDangKy()}>
+                        <Text style={styles.textBtDangNhap}>Đăng ký</Text>
+                    </TouchableOpacity>
+                    <View style={styles.boxDangKy}>
+                        <Text style={styles.textChuaCo}>Đã tài khoản?</Text>
+                        <TouchableOpacity style={styles.btDangKy} onPress={() => navigation.replace('DangNhapScreen')}>
+                            <Text style={styles.textDangKy}>Đăng nhập ngay</Text>
+                        </TouchableOpacity>
+                    </View>
 
-            </View>
-        </ScrollView>
+                </View>
+            </ScrollView>
+            <SpinnerOverlay
+                visible={isLoading}
+                textStyle={{ color: '#FFF' }}
+                animation="fade"
+                color="#fff"
+            />
+        </View >
+
     )
 }
 

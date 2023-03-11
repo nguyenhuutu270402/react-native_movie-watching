@@ -1,8 +1,9 @@
-import { StyleSheet, Text, View, Image, TextInput, ImageBackground, useWindowDimensions, TouchableOpacity, ScrollView, ToastAndroid } from 'react-native'
+import { StyleSheet, Text, View, Image, TextInput, useWindowDimensions, TouchableOpacity, ScrollView, ToastAndroid } from 'react-native'
 import { ApiContext } from '../contexts/ApiContext';
 import React, { useContext, useEffect, useState } from 'react';
 import { Ionicons, Feather, MaterialCommunityIcons, Entypo } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import SpinnerOverlay from 'react-native-loading-spinner-overlay';
 
 const DangNhapScreen = (props) => {
     const { height, width } = useWindowDimensions();
@@ -11,15 +12,20 @@ const DangNhapScreen = (props) => {
     const [isShowMatKhau, setIsShowMatKhau] = useState(true);
     const [email, setEmail] = useState('');
     const [matKhau, setMatKhau] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
+
     const onDangNhap = async () => {
+        setIsLoading(true);
         if (email.length < 1, matKhau.length < 1) {
             ToastAndroid.show('Email và mật khẩu không được để trống', ToastAndroid.CENTER);
+            setIsLoading(false);
             return;
         }
         const response1 = await onLoginUser(email.toLowerCase(), matKhau);
         const checkLogin = response1.result;
         if (checkLogin == false) {
             ToastAndroid.show('Email hoặc mật khẩu không đúng', ToastAndroid.CENTER);
+            setIsLoading(false);
             return;
         } else {
             const dataUser = response1.data;
@@ -29,66 +35,83 @@ const DangNhapScreen = (props) => {
             setIsLoggedIn(true);
             navigation.navigate("Trang Chủ");
         }
-
+        setIsLoading(false);
     }
     return (
-        <ScrollView>
-
-            <View style={[styles.container, { minHeight: height }]}>
-                <TouchableOpacity style={styles.boxIconBack} onPress={() => navigation.navigate("Trang Chủ")}>
-                    <Ionicons name="arrow-back-circle" size={30} color="white" />
-                </TouchableOpacity>
-                <Image style={[styles.logo, { width: width / 2, height: width / 4 }]} source={require('../../assets/images/login_logo.png')}></Image>
-                <View style={styles.boxAllTextInput}>
-                    <View style={styles.boxTextInput}>
-                        <MaterialCommunityIcons style={styles.iconTextInput} name="email-outline" size={24} color="white" />
-                        <TextInput
-                            style={styles.textInputEmail}
-                            placeholder='Email'
-                            cursorColor={'white'}
-                            placeholderTextColor={'#DDDDDD'}
-                            keyboardType='email-address'
-                            onChangeText={text => setEmail(text)} />
-                    </View>
-                    <View style={styles.line} />
-                    <View style={styles.boxTextInput}>
-                        <Feather style={styles.iconTextInput} name="lock" size={24} color="white" />
-                        <TextInput
-                            style={styles.textInputEmail}
-                            placeholder='Mật khẩu'
-                            cursorColor={'white'}
-                            placeholderTextColor={'#DDDDDD'}
-                            secureTextEntry={isShowMatKhau}
-                            onChangeText={text => setMatKhau(text)} />
-                        {
-                            isShowMatKhau === true ?
-                                <TouchableOpacity style={styles.iconShowPass} onPress={() => setIsShowMatKhau(false)}>
-                                    <Entypo name="eye" size={24} color="white" />
-                                </TouchableOpacity>
-                                :
-                                <TouchableOpacity style={styles.iconShowPass} onPress={() => setIsShowMatKhau(true)}>
-                                    <Entypo name="eye-with-line" size={24} color="white" />
-                                </TouchableOpacity>
-                        }
-                    </View>
-                </View>
-                <TouchableOpacity style={styles.btDangNhap} onPress={() => onDangNhap()}>
-                    <Text style={styles.textBtDangNhap}>Đăng nhập</Text>
-                </TouchableOpacity>
-                <View style={styles.boxDangKy}>
-                    <Text style={styles.textChuaCo}>Chưa có tài khoản?</Text>
-                    <TouchableOpacity style={styles.btDangKy} onPress={() => navigation.replace('DangKyScreen')}>
-                        <Text style={styles.textDangKy}>Đăng ký ngay</Text>
+        <View>
+            <ScrollView>
+                <View style={[styles.container, { minHeight: height }]}>
+                    <TouchableOpacity style={styles.boxIconBack} onPress={() => navigation.navigate("Trang Chủ")}>
+                        <Ionicons name="arrow-back-circle" size={30} color="white" />
                     </TouchableOpacity>
+                    <Image style={[styles.logo, { width: width / 2, height: width / 4 }]} source={require('../../assets/images/login_logo.png')}></Image>
+                    <View style={styles.boxAllTextInput}>
+                        <View style={styles.boxTextInput}>
+                            <MaterialCommunityIcons style={styles.iconTextInput} name="email-outline" size={24} color="white" />
+                            <TextInput
+                                style={styles.textInputEmail}
+                                placeholder='Email'
+                                cursorColor={'white'}
+                                placeholderTextColor={'#DDDDDD'}
+                                keyboardType='email-address'
+                                onChangeText={text => setEmail(text)} />
+                        </View>
+                        <View style={styles.line} />
+                        <View style={styles.boxTextInput}>
+                            <Feather style={styles.iconTextInput} name="lock" size={24} color="white" />
+                            <TextInput
+                                style={styles.textInputEmail}
+                                placeholder='Mật khẩu'
+                                cursorColor={'white'}
+                                placeholderTextColor={'#DDDDDD'}
+                                secureTextEntry={isShowMatKhau}
+                                onChangeText={text => setMatKhau(text)} />
+                            {
+                                isShowMatKhau === true ?
+                                    <TouchableOpacity style={styles.iconShowPass} onPress={() => setIsShowMatKhau(false)}>
+                                        <Entypo name="eye" size={24} color="white" />
+                                    </TouchableOpacity>
+                                    :
+                                    <TouchableOpacity style={styles.iconShowPass} onPress={() => setIsShowMatKhau(true)}>
+                                        <Entypo name="eye-with-line" size={24} color="white" />
+                                    </TouchableOpacity>
+                            }
+                        </View>
+                    </View>
+                    <TouchableOpacity style={styles.btDangNhap} onPress={() => onDangNhap()}>
+                        <Text style={styles.textBtDangNhap}>Đăng nhập</Text>
+                    </TouchableOpacity>
+                    <View style={styles.boxDangKy}>
+                        <Text style={styles.textChuaCo}>Chưa có tài khoản?</Text>
+                        <TouchableOpacity style={styles.btDangKy} onPress={() => navigation.replace('DangKyScreen')}>
+                            <Text style={styles.textDangKy}>Đăng ký ngay</Text>
+                        </TouchableOpacity>
+                    </View>
                 </View>
-            </View>
-        </ScrollView>
+            </ScrollView>
+            <SpinnerOverlay
+                visible={isLoading}
+                textStyle={{ color: '#FFF' }}
+                animation="fade"
+                color="#fff"
+            />
+        </View>
     )
 }
 
 export default DangNhapScreen
 
 const styles = StyleSheet.create({
+    txtLoadingModal: {
+        color: 'white',
+    },
+    loadingModal: {
+        backgroundColor: 'rgba(11,12,12,0.5)',
+        width: '100%',
+        height: '100%',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
     textChuaCo: {
         color: 'white',
         fontSize: 16,

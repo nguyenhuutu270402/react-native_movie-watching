@@ -16,34 +16,30 @@ const CustomDrawer = (props) => {
             <DrawerContentScrollView {...props} contentContainerStyle={{ backgroundColor: 'rgba(1,8,34,255)' }}>
                 <TouchableOpacity>
                     <ImageBackground style={styles.bgrImage} source={require('../../assets/images/bg_drawer.jpg')}>
-                        {
-                            isLoggedIn == false ?
-                                <View style={styles.boxTaiKhoan}>
-                                    <View style={styles.iconPerson}>
+                        <View style={styles.boxTaiKhoan}>
+                            {isLoggedIn ? (
+                                <View style={styles.iconPerson}>
+                                    {nguoidung.avatar ? (
+                                        <Image
+                                            style={styles.imagePerson}
+                                            source={{ uri: nguoidung.avatar }}
+                                        />
+                                    ) : (
                                         <Ionicons name="person" size={60} color="white" />
-                                    </View>
-                                    <Text style={styles.txtName}>Chưa đăng nhập</Text>
-                                    <Text style={styles.txtEmail}></Text>
+                                    )}
                                 </View>
-                                :
-                                <View style={styles.boxTaiKhoan}>
-                                    {
-                                        nguoidung.avatar != "" ?
-                                            <Image style={styles.imagePerson} source={{ uri: nguoidung.avatar }} />
-                                            :
-                                            <View style={styles.iconPerson}>
-                                                <Ionicons name="person" size={60} color="white" />
-                                            </View>
-                                    }
-                                    {
-                                        nguoidung.tennguoidung != "" || nguoidung.avatar != "" ?
-                                            <Text style={styles.txtName}>{nguoidung.tennguoidung}</Text>
-                                            :
-                                            <Text style={styles.txtName}>Cập nhật tài khoản</Text>
-                                    }
-                                    <Text style={styles.txtEmail}>{nguoidung.email}</Text>
+                            ) : (
+                                <View style={styles.iconPerson}>
+                                    <Ionicons name="person" size={60} color="white" />
                                 </View>
-                        }
+                            )}
+                            {nguoidung.tennguoidung || nguoidung.avatar ? (
+                                <Text style={styles.txtName}>{nguoidung.tennguoidung || 'Cập nhật tài khoản'}</Text>
+                            ) : (
+                                <Text style={styles.txtName}>Chưa đăng nhập</Text>
+                            )}
+                            <Text style={styles.txtEmail}>{nguoidung.email || ''}</Text>
+                        </View>
                     </ImageBackground>
                 </TouchableOpacity>
                 <View style={[styles.boxBottom, { minHeight: heightBot }]}>

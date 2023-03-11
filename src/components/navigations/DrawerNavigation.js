@@ -41,7 +41,7 @@ const DrawerNavigation = () => {
             }}>
 
             <Drawer.Screen name="Trang Chủ" component={TrangChuStack} options={{
-                headerShown: true,
+                headerShown: false,
                 drawerIcon: ({ color }) => (
                     <Ionicons name="home-outline" size={24} color={color} />
                 )
