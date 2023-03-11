@@ -1,44 +1,44 @@
-import { StyleSheet, Text, View, Image, TextInput, ImageBackground, Dimensions, TouchableOpacity, ScrollView, ToastAndroid } from 'react-native'
+import { StyleSheet, Text, View, Image, TextInput, ImageBackground, useWindowDimensions, TouchableOpacity, ScrollView, ToastAndroid } from 'react-native'
 import { ApiContext } from '../contexts/ApiContext';
 import React, { useContext, useEffect, useState } from 'react';
 import { Ionicons, Feather, MaterialCommunityIcons, Entypo } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useNavigation } from '@react-navigation/native';
 
 const DangNhapScreen = (props) => {
-    const useNav = useNavigation();
+    const { height, width } = useWindowDimensions();
     const { navigation } = props;
-    const { onLoginUser, isLoggedIn, setIsLoggedIn } = useContext(ApiContext);
+    const { onLoginUser, setIsLoggedIn, setNguoidung } = useContext(ApiContext);
     const [isShowMatKhau, setIsShowMatKhau] = useState(true);
     const [email, setEmail] = useState('');
     const [matKhau, setMatKhau] = useState('');
     const onDangNhap = async () => {
-        // if (email.length < 1, matKhau.length < 1) {
-        //     ToastAndroid.show('Email và mật khẩu không được để trống', ToastAndroid.CENTER);
-        //     return;
-        // }
-        // const response1 = await onLoginUser(email.toLowerCase(), matKhau);
-        // const checkLogin = response1.results;
-        // if (checkLogin == false) {
-        //     ToastAndroid.show('Email hoặc mật khẩu không đúng', ToastAndroid.CENTER);
-        //     return;
-        // } else {
-        //     ToastAndroid.show('Đăng nhập thành công', ToastAndroid.CENTER);
-        //     AsyncStorage.setItem('nguoidung', JSON.stringify(checkLogin));
-        //     navigation.replace('CaiDatScreen');
-        // }
-        setIsLoggedIn(true);
-        navigation.navigate("Trang Chủ");
+        if (email.length < 1, matKhau.length < 1) {
+            ToastAndroid.show('Email và mật khẩu không được để trống', ToastAndroid.CENTER);
+            return;
+        }
+        const response1 = await onLoginUser(email.toLowerCase(), matKhau);
+        const checkLogin = response1.result;
+        if (checkLogin == false) {
+            ToastAndroid.show('Email hoặc mật khẩu không đúng', ToastAndroid.CENTER);
+            return;
+        } else {
+            const dataUser = response1.data;
+            ToastAndroid.show('Đăng nhập thành công', ToastAndroid.CENTER);
+            AsyncStorage.setItem('nguoidung', JSON.stringify(dataUser));
+            setNguoidung(dataUser);
+            setIsLoggedIn(true);
+            navigation.navigate("Trang Chủ");
+        }
+
     }
     return (
         <ScrollView>
 
-            <View style={styles.container}>
-                <Image style={styles.background} source={require('../../assets/images/bglogin2.png')} />
-                <TouchableOpacity style={styles.boxIconBack} onPress={() => useNav.navigate("Trang Chủ")}>
+            <View style={[styles.container, { minHeight: height }]}>
+                <TouchableOpacity style={styles.boxIconBack} onPress={() => navigation.navigate("Trang Chủ")}>
                     <Ionicons name="arrow-back-circle" size={30} color="white" />
                 </TouchableOpacity>
-                <Text style={styles.textDangNhap}>Đăng nhập</Text>
+                <Image style={[styles.logo, { width: width / 2, height: width / 4 }]} source={require('../../assets/images/login_logo.png')}></Image>
                 <View style={styles.boxAllTextInput}>
                     <View style={styles.boxTextInput}>
                         <MaterialCommunityIcons style={styles.iconTextInput} name="email-outline" size={24} color="white" />
@@ -50,7 +50,7 @@ const DangNhapScreen = (props) => {
                             keyboardType='email-address'
                             onChangeText={text => setEmail(text)} />
                     </View>
-
+                    <View style={styles.line} />
                     <View style={styles.boxTextInput}>
                         <Feather style={styles.iconTextInput} name="lock" size={24} color="white" />
                         <TextInput
@@ -75,9 +75,12 @@ const DangNhapScreen = (props) => {
                 <TouchableOpacity style={styles.btDangNhap} onPress={() => onDangNhap()}>
                     <Text style={styles.textBtDangNhap}>Đăng nhập</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.btDangKy} onPress={() => navigation.replace('DangKyScreen')}>
-                    <Text style={styles.textDangKy}>Đăng ký</Text>
-                </TouchableOpacity>
+                <View style={styles.boxDangKy}>
+                    <Text style={styles.textChuaCo}>Chưa có tài khoản?</Text>
+                    <TouchableOpacity style={styles.btDangKy} onPress={() => navigation.replace('DangKyScreen')}>
+                        <Text style={styles.textDangKy}>Đăng ký ngay</Text>
+                    </TouchableOpacity>
+                </View>
             </View>
         </ScrollView>
     )
@@ -86,55 +89,79 @@ const DangNhapScreen = (props) => {
 export default DangNhapScreen
 
 const styles = StyleSheet.create({
+    textChuaCo: {
+        color: 'white',
+        fontSize: 16,
+        fontWeight: '300',
+    },
+    boxDangKy: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        flexDirection: 'row',
+        marginVertical: 28,
+    },
+    line: {
+        height: 3,
+        width: '100%',
+        backgroundColor: '#25242a',
+    },
+    logo: {
+        resizeMode: 'contain',
+        marginTop: 100,
+        marginBottom: 50,
+    },
     iconShowPass: {
         position: 'absolute',
-        right: 10,
-        top: 13
+        right: 16,
+        height: '100%',
+        width: 30,
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     textDangKy: {
-        color: 'blue',
-        fontSize: 18,
-        fontWeight: '500',
+        color: '#20ab7d',
+        fontSize: 16,
+        fontWeight: '300',
+        marginLeft: 10,
     },
     btDangKy: {
-        marginTop: 16,
-        // marginLeft: 100,
     },
     textBtDangNhap: {
         color: 'white',
         fontSize: 18,
+        fontWeight: '300'
     },
     btDangNhap: {
-        width: 200,
-        height: 50,
-        backgroundColor: '#339966',
+        width: '85%',
+        height: 60,
+        backgroundColor: '#35343b',
         justifyContent: 'center',
         alignItems: 'center',
         marginTop: 60,
-        borderRadius: 6,
+        borderRadius: 16,
         elevation: 10,
     },
     iconTextInput: {
-        position: 'absolute',
-        left: 16,
-        top: 13
+        marginLeft: 16,
     },
     textInputEmail: {
-        width: Dimensions.get('window').width - 60,
+        width: '80%',
         height: 50,
-        borderWidth: 1,
-        borderColor: 'white',
-        paddingLeft: 50,
-        borderRadius: 10,
         color: 'white',
         fontSize: 16,
+        marginLeft: 16,
     },
     boxTextInput: {
         flexDirection: 'row',
+        justifyContent: 'flex-start',
+        alignItems: 'center',
         marginVertical: 10,
     },
     boxAllTextInput: {
         marginTop: 20,
+        backgroundColor: '#17171b',
+        borderRadius: 16,
+        width: '85%',
     },
     textDangNhap: {
         fontSize: 30,
@@ -156,9 +183,9 @@ const styles = StyleSheet.create({
     },
     container: {
         width: '100%',
-        height: Dimensions.get('window').height,
-        // height: '100%',
         alignItems: 'center',
+        // justifyContent: 'center',
+        backgroundColor: '#25242a'
         // justifyContent: 'center',
     },
 })

@@ -16,7 +16,7 @@ import DangNhapStack from '../stacks/DangNhapStack';
 const Drawer = createDrawerNavigator();
 const DrawerNavigation = () => {
 
-    const { isLoggedIn, setIsLoggedIn } = useContext(ApiContext);
+    const { isLoggedIn, setIsLoggedIn, setNguoidung } = useContext(ApiContext);
 
     const LogOutStack = () => {
         useEffect(() => {
@@ -25,6 +25,7 @@ const DrawerNavigation = () => {
                     console.log('Item was removed.');
                 });
             setIsLoggedIn(false);
+            setNguoidung({});
             ToastAndroid.show('Đăng xuất thành công', ToastAndroid.CENTER);
         }, [isLoggedIn])
     }
