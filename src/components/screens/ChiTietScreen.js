@@ -1,28 +1,36 @@
-import { StyleSheet, Text, View, Image, TouchableOpacity, ToastAndroid, Alert, useWindowDimensions, Pressable, FlatList } from 'react-native';
-import React, { useContext, useEffect, useState } from 'react';
+import { StyleSheet, Text, View, Image, TouchableOpacity, ToastAndroid, Alert, TextInput, useWindowDimensions, Pressable, FlatList } from 'react-native';
+import React, { useContext, useEffect, useCallback, useRef, useState } from 'react';
 import Modal from "react-native-modal";
 import { ApiContext } from '../contexts/ApiContext';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons, FontAwesome5, MaterialCommunityIcons, EvilIcons, FontAwesome, AntDesign, Fontisto, Entypo } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import SpinnerOverlay from 'react-native-loading-spinner-overlay';
-
+import BottomSheet, { BottomSheetFlatList, } from '@gorhom/bottom-sheet';
 const ChiTietScreen = (props) => {
     const { navigation, route: { params: { id } } } = props;
     const { height, width } = useWindowDimensions();
     const [aspectRatio, setAspectRatio] = useState(0);
     const { onGetOnePhimById, onAddTheoDoi, onDeleteTheoDoi,
         onAddLuotXem, onAddDanhGia, nguoidung, isLoggedIn,
-        onKiemTraTheoDoi, onAddLichSu, onAddBinhLuan } = useContext(ApiContext);
+        onKiemTraTheoDoi, onAddLichSu, onAddBinhLuan, onGetListBinhLuanByIdPhim } = useContext(ApiContext);
     const [isShowModal, setIsShowModal] = useState(false);
-    const [isShowModalBinhLuan, setIsShowModalBinhLuan] = useState(false);
     const [rating, setRating] = useState(0);
-    const [onePhim, setOnePhim] = useState(0);
+    const [snapPoints, setSnapPoints] = useState(["1%"]);
+    const [onePhim, setOnePhim] = useState({});
     const [isLoading, setIsLoading] = useState(false);
     const [isShowListTap, setIsShowListTap] = useState(false);
     const [isShowXemThem, setIsShowXemThem] = useState(false);
     const [kiemTraTheoDoi, setKiemTraTheoDoi] = useState(false);
     const [listBinhLuan, setListBinhLuan] = useState([]);
+    const [noiDungBinhLuan, setNoiDungBinhLuan] = useState('');
+
+
+    const sheetRef = useRef(null);
+    // const snapPoints = ["1%"];
+    const handleSnapPress = useCallback((index) => {
+        sheetRef.current?.snapToIndex(index);
+    }, []);
+    sheetRef.current?.close();
 
     async function fetchData() {
         try {
@@ -32,9 +40,12 @@ const ChiTietScreen = (props) => {
                 response1 = await onGetOnePhimById(id, nguoidung.id);
                 const response2 = await onKiemTraTheoDoi(nguoidung.id, id);
                 setKiemTraTheoDoi(response2.result);
+                const response3 = await onGetListBinhLuanByIdPhim(id);
+                setListBinhLuan(response3.data);
             } else {
                 response1 = await onGetOnePhimById(id, 0);
             }
+            setSnapPoints(["70%"]);
             setOnePhim(response1.data);
             Image.getSize(response1.data.image, (Width, Height) => {
                 setAspectRatio(Width / Height);
@@ -82,6 +93,29 @@ const ChiTietScreen = (props) => {
             console.log(error);
         }
     }
+    const onFormatDate = (date) => {
+        var dateCurent = new Date();
+        var d = new Date(date);
+        var timeFormat = new Date(dateCurent - d);
+        if (d && timeFormat < 3600000 && timeFormat > 0) {
+            var minute = (timeFormat / 60000).toFixed(0);
+            return minute + ' phút trước';
+        }
+        else if (d && timeFormat < 86400000 && timeFormat > 0) {
+            var hours = (timeFormat / 3600000).toFixed(0);
+            return hours + ' giờ trước';
+        } else if (d && timeFormat < 2592000000) {
+            var date = (timeFormat / 86400000).toFixed(0);
+            return date + ' ngày trước';
+        }
+        else if (d && timeFormat > 2592000000) {
+            var date = d.getDate();
+            var month = d.getMonth() + 1;
+            var year = d.getFullYear();
+            const dateString = date.toString().padStart(2, "0") + '/' + month.toString().padStart(2, "0") + '/' + year;
+            return dateString;
+        }
+    }
     const onFormatSoSao = (sosao) => {
         try {
             if (sosao) {
@@ -127,15 +161,26 @@ const ChiTietScreen = (props) => {
         ToastAndroid.show('Đánh giá thành công', ToastAndroid.CENTER);
     }
     const addBinhLuan = async () => {
-        setIsLoading(true);
-        if (isLoggedIn == false) {
-            ToastAndroid.show('Đăng nhập để sử dụng chức năng này', ToastAndroid.CENTER);
+        try {
+            setIsLoading(true);
+            if (noiDungBinhLuan.length < 1) {
+                ToastAndroid.show('Chưa có chữ nào', ToastAndroid.CENTER);
+                setIsLoading(false);
+                return;
+            } else if (isLoggedIn == false) {
+                ToastAndroid.show('Đăng nhập để sử dụng chức năng này', ToastAndroid.CENTER);
+                setIsLoading(false);
+                return;
+            }
+            await onAddBinhLuan(nguoidung.id, onePhim.id, noiDungBinhLuan);
+            const response3 = await onGetListBinhLuanByIdPhim(onePhim.id);
+            setListBinhLuan(response3.data);
+            setNoiDungBinhLuan("");
             setIsLoading(false);
-            return;
+            ToastAndroid.show('Bình luận thành công', ToastAndroid.CENTER);
+        } catch (error) {
+            console.log(error);
         }
-        await onAddBinhLuan(nguoidung.id, onePhim.id, nodung);
-        setIsLoading(false);
-        ToastAndroid.show('Bình luận thành công', ToastAndroid.CENTER);
     }
     const deleteTheoDoi = async () => {
         setIsLoading(true);
@@ -163,21 +208,14 @@ const ChiTietScreen = (props) => {
             ]
         );
     const openModalBinhLuan = async () => {
-        try {
-            setIsLoading(true);
-            if (isLoggedIn == false) {
-                ToastAndroid.show('Đăng nhập để sử dụng chức năng này', ToastAndroid.CENTER);
-                setIsLoading(true);
-                return;
-            }
-            const response = await onGetListBinhLuanByIdPhim(onePhim.id);
-            setListBinhLuan(response.data);
-            console.log(">>>>>> ", response.data);
-            setIsShowModalBinhLuan(true);
-            setIsLoading(false);
-        } catch (error) {
-            console.log(error);
+        if (isLoggedIn == false) {
+            ToastAndroid.show('Đăng nhập để sử dụng chức năng này', ToastAndroid.CENTER);
+            return;
+        } else if (nguoidung.avatar == "" | nguoidung.tennguoidung == "") {
+            ToastAndroid.show('Cập nhật tài khoản để sử dụng chức năng này', ToastAndroid.CENTER);
+            return;
         }
+        handleSnapPress(0);
     }
     const renderHeader = () => {
         return (
@@ -363,7 +401,7 @@ const ChiTietScreen = (props) => {
                                 <Text style={styles.txtTongDanhGia}>({onFormatLuotXem(onePhim.tongtheodoi)} lượt theo dõi)</Text>
                             </TouchableOpacity>
                     }
-                    <TouchableOpacity style={styles.boxSoSao}>
+                    <TouchableOpacity style={styles.boxSoSao} onPress={() => openModalBinhLuan()}>
                         <AntDesign name="message1" size={24} color="green" />
                         <Text style={styles.txtTongDanhGia}>({onFormatLuotXem(onePhim.tongbinhluan)} bình luận)</Text>
                     </TouchableOpacity>
@@ -372,6 +410,21 @@ const ChiTietScreen = (props) => {
             </View>
         )
     }
+    const renderItemBinhLuan = ({ item, index }) => (
+        <View style={styles.itemModalBinhLuan}>
+            <Image
+                source={{ uri: item.avatar }}
+                style={styles.imageItemModalBinhLuan} />
+            <View style={styles.boxTTBinhLuan}>
+                <View style={[styles.boxTenVaNgay, { width: width - 90 }]}>
+                    <Text numberOfLines={1} style={styles.textTenNguoiBinhLuan}>{item.tennguoidung}</Text>
+                    <Text style={styles.textNgayBinhLuan}>{onFormatDate(item.ngaybinhluan)}</Text>
+                </View>
+                <Text style={[styles.textNoiDungNBL, { width: width - 110 }]}>{item.noidung}</Text>
+            </View>
+        </View>
+
+    );
 
     return (
         <View style={styles.container}>
@@ -412,11 +465,6 @@ const ChiTietScreen = (props) => {
             }
 
 
-
-
-
-
-
             <Modal isVisible={isShowModal}
                 animationIn='bounceInLeft'
                 animationOut='bounceOutRight'
@@ -450,6 +498,44 @@ const ChiTietScreen = (props) => {
                     </TouchableOpacity>
                 </View>
             </Modal>
+
+            <BottomSheet
+                ref={sheetRef}
+                snapPoints={snapPoints}
+                enablePanDownToClose={true}
+            >
+                <BottomSheetFlatList
+                    data={listBinhLuan}
+                    keyExtractor={(item) => item.id}
+                    renderItem={renderItemBinhLuan}
+                    contentContainerStyle={styles.contentContainer}
+                />
+                <View style={styles.boxInput}>
+
+                    {
+                        isLoggedIn !== false && nguoidung.avatar !== "" ?
+                            <Image
+                                source={{ uri: nguoidung.avatar }}
+                                style={styles.imageTaiKhoan} />
+                            :
+                            <View />
+                    }
+
+                    <TextInput
+                        style={styles.textInputBinhLuan}
+                        placeholder='Thêm bình luận'
+                        cursorColor={'#777'}
+                        placeholderTextColor={'#777'}
+                        onChangeText={text => setNoiDungBinhLuan(text)}
+                        value={noiDungBinhLuan}
+                        multiline={true}
+                        numberOfLines={4} />
+                    <TouchableOpacity style={styles.iconSend} onPress={() => addBinhLuan()}>
+                        <MaterialCommunityIcons name="send" size={24} color="green" />
+                    </TouchableOpacity>
+                </View>
+            </BottomSheet>
+
             <SpinnerOverlay
                 visible={isLoading}
                 textStyle={{ color: '#FFF' }}
@@ -464,6 +550,87 @@ const ChiTietScreen = (props) => {
 export default ChiTietScreen
 
 const styles = StyleSheet.create({
+    iconSend: {
+        position: 'absolute',
+        right: 0,
+    },
+    boxInput: {
+        flexDirection: 'row',
+        backgroundColor: 'white',
+        borderBottomEndRadius: 6,
+        borderBottomStartRadius: 6,
+        marginHorizontal: 10,
+        alignItems: 'center',
+        maxHeight: 120,
+        borderTopWidth: 0.3,
+        borderColor: 'grey'
+    },
+    textInputBinhLuan: {
+        marginRight: 20,
+        marginLeft: 20,
+        width: '73%',
+        fontSize: 15,
+        fontWeight: '400',
+        color: '#222',
+        lineHeight: 25,
+    },
+    imageTaiKhoan: {
+        width: 50,
+        height: 50,
+        borderRadius: 30,
+    },
+    textNoiDungNBL: {
+        fontSize: 15,
+        fontWeight: '400',
+        color: '#222',
+    },
+    textNgayBinhLuan: {
+        width: '50%',
+        textAlign: 'right',
+        fontSize: 12,
+        fontWeight: '400',
+        color: '#777',
+        fontStyle: 'italic',
+    },
+    textTenNguoiBinhLuan: {
+        fontSize: 15,
+        fontWeight: '600',
+        color: '#222',
+    },
+    boxTenVaNgay: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        width: '80%',
+    },
+    boxTTBinhLuan: {
+        marginLeft: 20,
+    },
+    imageItemModalBinhLuan: {
+        width: 50,
+        height: 50,
+        borderRadius: 30,
+        resizeMode: 'cover',
+        backgroundColor: 'black',
+    },
+    itemModalBinhLuan: {
+        flexDirection: 'row',
+        alignSelf: 'center',
+        marginVertical: 16,
+    },
+    modal: {
+        justifyContent: 'flex-end',
+        margin: 0,
+    },
+    modalBinhLuanContainer: {
+        backgroundColor: 'white',
+        borderRadius: 4,
+        borderColor: 'rgba(0, 0, 0, 0.1)',
+        maxHeight: '80%',
+        minHeight: '70%',
+    },
+
+
+    //
     txtXemThem: {
         color: 'green',
     },

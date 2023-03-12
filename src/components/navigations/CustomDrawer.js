@@ -33,7 +33,7 @@ const CustomDrawer = (props) => {
                                     <Ionicons name="person" size={60} color="white" />
                                 </View>
                             )}
-                            {nguoidung.tennguoidung || nguoidung.avatar ? (
+                            {nguoidung.tennguoidung == "" || nguoidung.avatar == "" ? (
                                 <Text style={styles.txtName}>{nguoidung.tennguoidung || 'Cập nhật tài khoản'}</Text>
                             ) : (
                                 <Text style={styles.txtName}>Chưa đăng nhập</Text>
