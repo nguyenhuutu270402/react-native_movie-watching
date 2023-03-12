@@ -112,55 +112,26 @@ const TrangChuScreen = (props) => {
     }
     const renderTop10Phim = ({ item }) => {
         return (
-            <View>
-                {
-                    width < 600 ?
-                        <TouchableOpacity style={[styles.boxItem]} onPress={() => navigation.navigate('ChiTietScreen', { id: item.id })}>
-                            <Image style={[styles.imageItemTop10, { width: (width / 2) - 12 }]} source={{ uri: item.image }} />
-                            <View style={[styles.boxName]}>
-                                <Text style={[styles.txtName]} numberOfLines={2}>{item.tenphim}</Text>
-                            </View>
-                            <Text style={[styles.txtChatLuong]}>{item.phan_hoac_chatluong}</Text>
-                            <Text style={[styles.txtThongTinTap]}>{item.thong_tin_tap}</Text>
-                        </TouchableOpacity>
-                        :
-                        <TouchableOpacity style={[styles.boxItem]} onPress={() => console.log(item.id)}>
-                            <Image style={[styles.imageItemTop10, { width: (width / 3) - 12 }]} source={{ uri: item.image }} />
-                            <View style={[styles.boxName]}>
-                                <Text style={[styles.txtName]} numberOfLines={2}>{item.tenphim}</Text>
-                            </View>
-                            <Text style={[styles.txtChatLuong]}>{item.phan_hoac_chatluong}</Text>
-                            <Text style={[styles.txtThongTinTap]}>{item.thong_tin_tap}</Text>
-                        </TouchableOpacity>
-                }
-            </View>
+            <TouchableOpacity style={[styles.boxItem]} onPress={() => navigation.navigate('ChiTietScreen', { id: item.id })}>
+                <Image style={[styles.imageItemTop10, { width: width < 600 ? ((width / 2) - 12) : ((width / 3) - 12) }]} source={{ uri: item.image }} />
+                <View style={[styles.boxName]}>
+                    <Text style={[styles.txtName]} numberOfLines={2}>{item.tenphim}</Text>
+                </View>
+                <Text style={[styles.txtChatLuong]}>{item.phan_hoac_chatluong}</Text>
+                <Text style={[styles.txtThongTinTap]}>{item.thong_tin_tap}</Text>
+            </TouchableOpacity>
         )
 
     }
     const renderItemAllPhim = ({ item }) => (
-        <View>
-            {
-                width < 600 ?
-                    <TouchableOpacity style={[styles.boxItem]} onPress={() => navigation.navigate('ChiTietScreen', { id: item.id })}>
-                        <Image style={[styles.imageItemTop10, { width: (width / 2) - 12 }]} source={{ uri: item.image }} />
-                        <View style={[styles.boxName]}>
-                            <Text style={[styles.txtName]} numberOfLines={2}>{item.tenphim}</Text>
-                        </View>
-                        <Text style={[styles.txtChatLuong]}>{item.phan_hoac_chatluong}</Text>
-                        <Text style={[styles.txtThongTinTap]}>{item.thong_tin_tap}</Text>
-                    </TouchableOpacity>
-                    :
-                    <TouchableOpacity style={[styles.boxItem]} onPress={() => console.log(item.id)}>
-                        <Image style={[styles.imageItemTop10, { width: (width / 3) - 12 }]} source={{ uri: item.image }} />
-                        <View style={[styles.boxName]}>
-                            <Text style={[styles.txtName]} numberOfLines={2}>{item.tenphim}</Text>
-                        </View>
-                        <Text style={[styles.txtChatLuong]}>{item.phan_hoac_chatluong}</Text>
-                        <Text style={[styles.txtThongTinTap]}>{item.thong_tin_tap}</Text>
-                    </TouchableOpacity>
-            }
-        </View>
-
+        <TouchableOpacity style={[styles.boxItem]} onPress={() => navigation.navigate('ChiTietScreen', { id: item.id })}>
+            <Image style={[styles.imageItemTop10, { width: width < 600 ? ((width / 2) - 12) : ((width / 3) - 12) }]} source={{ uri: item.image }} />
+            <View style={[styles.boxName]}>
+                <Text style={[styles.txtName]} numberOfLines={2}>{item.tenphim}</Text>
+            </View>
+            <Text style={[styles.txtChatLuong]}>{item.phan_hoac_chatluong}</Text>
+            <Text style={[styles.txtThongTinTap]}>{item.thong_tin_tap}</Text>
+        </TouchableOpacity>
     );
 
     return (

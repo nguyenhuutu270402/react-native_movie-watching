@@ -91,7 +91,7 @@ const styles = StyleSheet.create({
         borderWidth: 2,
         marginVertical: 20,
         borderRadius: 50,
-        resizeMode: 'center',
+        resizeMode: 'cover',
     },
     bgrImage: {
         alignItems: 'center',
