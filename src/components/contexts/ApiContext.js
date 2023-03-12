@@ -63,9 +63,9 @@ export const ApiContextProvider = (props) => {
             console.log('onGetTop10Phim error: ', error);
         }
     }
-    const onGetOnePhimById = async (id) => {
+    const onGetOnePhimById = async (idPhim, idnguoidung) => {
         try {
-            const res = await getOnePhimById(id);
+            const res = await getOnePhimById(idPhim, idnguoidung);
             return res;
         } catch (error) {
             console.log('onGetOnePhimById error: ', error);

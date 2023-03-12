@@ -76,7 +76,6 @@ const TrangChuScreen = (props) => {
             setIsLoading(true);
             const response1 = await onGetTop10Phim();
             const response2 = await onGetAllPhim();
-            console.log(">>> ", response1);
             setAllPhim(response2.data);
             setTop10Phim(response1.data);
             setIsLoading(false);
@@ -116,8 +115,7 @@ const TrangChuScreen = (props) => {
             <View>
                 {
                     width < 600 ?
-                        <TouchableOpacity style={[styles.boxItem]} onPress={() => console.log(item.id)}>
-
+                        <TouchableOpacity style={[styles.boxItem]} onPress={() => navigation.navigate('ChiTietScreen', { id: item.id })}>
                             <Image style={[styles.imageItemTop10, { width: (width / 2) - 12 }]} source={{ uri: item.image }} />
                             <View style={[styles.boxName]}>
                                 <Text style={[styles.txtName]} numberOfLines={2}>{item.tenphim}</Text>
@@ -136,7 +134,6 @@ const TrangChuScreen = (props) => {
                         </TouchableOpacity>
                 }
             </View>
-
         )
 
     }
@@ -144,8 +141,7 @@ const TrangChuScreen = (props) => {
         <View>
             {
                 width < 600 ?
-                    <TouchableOpacity style={[styles.boxItem]} onPress={() => console.log(item.id)}>
-
+                    <TouchableOpacity style={[styles.boxItem]} onPress={() => navigation.navigate('ChiTietScreen', { id: item.id })}>
                         <Image style={[styles.imageItemTop10, { width: (width / 2) - 12 }]} source={{ uri: item.image }} />
                         <View style={[styles.boxName]}>
                             <Text style={[styles.txtName]} numberOfLines={2}>{item.tenphim}</Text>

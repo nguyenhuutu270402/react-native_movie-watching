@@ -28,8 +28,8 @@ export const updatePasswordUser = async (matkhau, id) => {
     const res = await axiosInstance.get(`api/update-password-user`, data);
     return res;
 }
-export const getOnePhimById = async (id) => {
-    const res = await axiosInstance.get(`get-one-phim-by-id/:id/${id}`);
+export const getOnePhimById = async (idPhim, idNguoiDung) => {
+    const res = await axiosInstance.get(`api/get-one-phim-by-id/${idPhim}/${idNguoiDung}`);
     return res;
 }
 export const addLuotXem = async (idnguoidung, idtap) => {
