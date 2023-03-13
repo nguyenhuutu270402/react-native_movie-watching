@@ -80,3 +80,8 @@ export const deleteLichSu = async (idnguoidung, idphim) => {
     const res = await axiosInstance.post(`api/delete-lich-su`, data);
     return res;
 }
+export const getOneTapById = async (idTap, idPhim, idNguoiDung) => {
+    const res = await axiosInstance.get(`api/get-one-tap-by-id/${idTap}/${idPhim}/${idNguoiDung}`);
+    return res;
+}
+

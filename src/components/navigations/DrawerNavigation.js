@@ -9,6 +9,7 @@ import { ApiContext } from '../contexts/ApiContext';
 import LichSuScreen from '../screens/LichSuScreen';
 import TrangChuStack from '../stacks/TrangChuStack';
 import DangNhapStack from '../stacks/DangNhapStack';
+import TestScreen from '../screens/TestScreen';
 
 
 
@@ -53,7 +54,7 @@ const DrawerNavigation = () => {
                     <MaterialIcons name="history" size={24} color={color} />
                 )
             }} />
-            <Drawer.Screen name="Lịch sử1" component={LichSuScreen} options={{
+            <Drawer.Screen name="Lịch sử1" component={TestScreen} options={{
                 headerShown: true,
                 drawerIcon: ({ color }) => (
                     <MaterialIcons name="history" size={24} color={color} />

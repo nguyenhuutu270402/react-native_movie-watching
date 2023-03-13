@@ -278,12 +278,12 @@ const styles = StyleSheet.create({
     boxIconSearch: {
         position: 'absolute',
         right: 16,
-        top: 16,
+        top: 36,
     },
     boxIconDrawer: {
         position: 'absolute',
         left: 16,
-        top: 16,
+        top: 36,
     },
     txtHeader: {
         alignSelf: 'center',
@@ -291,15 +291,15 @@ const styles = StyleSheet.create({
         height: '100%',
         fontSize: 22,
         fontWeight: '500',
-        color: 'white'
+        color: 'white',
+        paddingTop: 20,
     },
     boxHeader: {
         width: '100%',
         position: 'relative',
-        height: 60,
-        marginTop: 15,
-        backgroundColor: '#202025'
-
+        height: 80,
+        backgroundColor: '#202025',
+        alignItems: 'baseline',
     },
     container: {
         backgroundColor: '#161619',

@@ -24,13 +24,10 @@ const ChiTietScreen = (props) => {
     const [listBinhLuan, setListBinhLuan] = useState([]);
     const [noiDungBinhLuan, setNoiDungBinhLuan] = useState('');
 
-
     const sheetRef = useRef(null);
-    // const snapPoints = ["1%"];
     const handleSnapPress = useCallback((index) => {
         sheetRef.current?.snapToIndex(index);
     }, []);
-    sheetRef.current?.close();
 
     async function fetchData() {
         try {
@@ -45,6 +42,7 @@ const ChiTietScreen = (props) => {
             } else {
                 response1 = await onGetOnePhimById(id, 0);
             }
+            sheetRef.current?.close();
             setSnapPoints(["70%"]);
             setOnePhim(response1.data);
             Image.getSize(response1.data.image, (Width, Height) => {
@@ -258,9 +256,8 @@ const ChiTietScreen = (props) => {
         )
     }
     const renderItem = ({ item, index }) => (
-        // <TouchableOpacity key={item.id} onPress={() => { addLuotXem(item.id); navigation.navigate('ChiTietPhimScreen', { id: item.id, index: index }) }}>
         <TouchableOpacity
-            onPress={() => { addLuotXem(item.id); navigation.navigate('ChiTietTapScreen', { id: item.id, index: index }) }}
+            onPress={() => { addLuotXem(item.id); navigation.navigate('ChiTietTapScreen', { idTap: item.id, idPhim: onePhim.id, index: index }) }}
             style={[styles.boxTapItem, { width: width < 600 ? width / 5 : width / 8.6, opacity: item.idnguoidung_da_xem ? 0.5 : 1 }]} key={item.id}>
             <Text style={styles.txtTenTapItem}>{item.tentap}</Text>
         </TouchableOpacity>
@@ -293,7 +290,7 @@ const ChiTietScreen = (props) => {
                             onePhim.ds_tap && onePhim.ds_tap.map((item, index) => (
                                 index < 3 &&
                                 <TouchableOpacity
-                                    onPress={() => { addLuotXem(item.id); navigation.navigate('ChiTietTapScreen', { id: item.id, index: index }) }}
+                                    onPress={() => { addLuotXem(item.id); navigation.navigate('ChiTietTapScreen', { idTap: item.id, idPhim: onePhim.id, index: index }) }}
                                     style={[styles.boxTapItem2, { width: width < 600 ? width / 5 : width / 8.6, opacity: item.idnguoidung_da_xem ? 0.5 : 1 }]} key={item.id}>
                                     <Text style={styles.txtTenTapItem}>{item.tentap}</Text>
                                 </TouchableOpacity>
@@ -751,7 +748,7 @@ const styles = StyleSheet.create({
         borderRadius: 6,
     },
     boxTapItem: {
-        backgroundColor: '#243d5f',
+        backgroundColor: '#3c3c3c',
         height: 30,
         marginHorizontal: '2.5%',
         alignItems: 'center',
@@ -847,12 +844,12 @@ const styles = StyleSheet.create({
     boxIconSearch: {
         position: 'absolute',
         right: 16,
-        top: 16,
+        top: 36,
     },
     boxIconDrawer: {
         position: 'absolute',
         left: 16,
-        top: 16,
+        top: 36,
     },
     txtHeader: {
         alignSelf: 'center',
@@ -860,15 +857,15 @@ const styles = StyleSheet.create({
         height: '100%',
         fontSize: 22,
         fontWeight: '500',
-        color: 'white'
+        color: 'white',
+        paddingTop: 20,
     },
     boxHeader: {
         width: '100%',
         position: 'relative',
-        height: 60,
-        marginTop: 15,
-        backgroundColor: '#202025'
-
+        height: 80,
+        backgroundColor: '#202025',
+        alignItems: 'baseline',
     },
     container: {
         backgroundColor: '#161619',
