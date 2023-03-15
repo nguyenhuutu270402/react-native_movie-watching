@@ -1,13 +1,13 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { StyleSheet, Text, View, Image, TouchableOpacity, FlatList, useWindowDimensions, RefreshControl, ToastAndroid } from 'react-native';
 import { ApiContext } from '../contexts/ApiContext';
-import { Ionicons, FontAwesome, Feather } from '@expo/vector-icons';
+import { Ionicons, FontAwesome } from '@expo/vector-icons';
 import SpinnerOverlay from 'react-native-loading-spinner-overlay';
 
-const LichSuScreen = (props) => {
+const TheoDoiScreen = (props) => {
     const { navigation } = props;
     const { height, width } = useWindowDimensions();
-    const { onGetListLichSuTheoIdNguoiDung, isLoggedIn, nguoidung, onDeleteLichSu } = useContext(ApiContext);
+    const { onGetPhimTheoLoai, isLoggedIn, nguoidung } = useContext(ApiContext);
     const [listPhim, setListPhim] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
 
@@ -15,7 +15,11 @@ const LichSuScreen = (props) => {
         try {
             setIsLoading(true);
             if (isLoggedIn) {
-                const response = await onGetListLichSuTheoIdNguoiDung(nguoidung.id)
+                const qr = `
+                LEFT JOIN theodoi ON phim.id = theodoi.idphim
+                WHERE theodoi.idnguoidung = ${nguoidung.id} 
+                `;
+                const response = await onGetPhimTheoLoai(qr)
                 setListPhim(response.data);
             } else {
                 setListPhim([]);
@@ -29,16 +33,6 @@ const LichSuScreen = (props) => {
     useEffect(() => {
         fetchData();
     }, []);
-
-    const deletLichSu = async (idphim) => {
-        try {
-            setIsLoading(true);
-            await onDeleteLichSu(nguoidung.id, idphim);
-            fetchData();
-        } catch (error) {
-            console.log(error);
-        }
-    }
 
     const [refreshing, setRefreshing] = useState(false);
     const onRefresh = () => {
@@ -55,11 +49,7 @@ const LichSuScreen = (props) => {
                 <Text style={[styles.txtName]} numberOfLines={2}>{item.tenphim}</Text>
             </View>
             <Text style={[styles.txtChatLuong]}>{item.phan_hoac_chatluong}</Text>
-            <Text style={[styles.txtThongTinTap]}>Đang xem {item.tentap_lichsu}</Text>
-            <TouchableOpacity onPress={() => deletLichSu(item.id)} style={[styles.iconXoa]}>
-                <Feather name="x" size={24} color="white" />
-            </TouchableOpacity>
-
+            <Text style={[styles.txtThongTinTap]}>{item.thong_tin_tap}</Text>
         </TouchableOpacity>
     );
     return (
@@ -68,7 +58,7 @@ const LichSuScreen = (props) => {
                 <TouchableOpacity style={styles.boxIconDrawer} onPress={() => navigation.openDrawer()}>
                     <FontAwesome name="bars" size={24} color="white" />
                 </TouchableOpacity>
-                <Text style={styles.txtHeader} numberOfLines={1}>Lịch sử</Text>
+                <Text style={styles.txtHeader} numberOfLines={1}>Theo dõi</Text>
                 <TouchableOpacity style={styles.boxIconSearch} onPress={() => navigation.navigate('TimKiemScreen')}>
                     <Ionicons name="ios-search" size={28} color="white" />
                 </TouchableOpacity>
@@ -112,29 +102,18 @@ const LichSuScreen = (props) => {
     )
 }
 
-export default LichSuScreen
+export default TheoDoiScreen
 
 const styles = StyleSheet.create({
-    iconXoa: {
-        backgroundColor: 'rgba(182,16,5,0.5)',
-        position: 'absolute',
-        width: 25,
-        height: 25,
-        alignItems: 'center',
-        justifyContent: 'center',
-        top: 5,
-        right: 5,
-    },
     txtThongTinTap: {
-        backgroundColor: 'rgba(11,52,108,0.9)',
+        backgroundColor: 'rgba(254,215,0,255)',
         fontSize: 13,
         paddingHorizontal: 10,
-        paddingVertical: 4,
+        paddingVertical: 2,
         position: 'absolute',
         bottom: 45,
         right: 5,
         borderRadius: 5,
-        color: 'white'
     },
     txtChatLuong: {
         backgroundColor: 'rgba(254,215,0,255)',

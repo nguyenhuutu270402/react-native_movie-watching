@@ -9,8 +9,9 @@ import { ApiContext } from '../contexts/ApiContext';
 import LichSuScreen from '../screens/LichSuScreen';
 import TrangChuStack from '../stacks/TrangChuStack';
 import DangNhapStack from '../stacks/DangNhapStack';
-import TestScreen from '../screens/TestScreen';
 import TaiKhoanScreen from '../screens/TaiKhoanScreen';
+import LichSuStack from '../stacks/LichSuStack';
+import TheoDoiStack from '../stacks/TheoDoiStack';
 
 
 
@@ -50,10 +51,16 @@ const DrawerNavigation = () => {
                 )
             }}
             />
-            <Drawer.Screen name="Lịch sử" component={LichSuScreen} options={{
-                headerShown: true,
+            <Drawer.Screen name="Lịch sử" component={LichSuStack} options={{
+                headerShown: false,
                 drawerIcon: ({ color }) => (
                     <MaterialIcons name="history" size={24} color={color} />
+                )
+            }} />
+            <Drawer.Screen name="Theo dõi" component={TheoDoiStack} options={{
+                headerShown: false,
+                drawerIcon: ({ color }) => (
+                    <AntDesign name="heart" size={24} color={color} />
                 )
             }} />
             {
