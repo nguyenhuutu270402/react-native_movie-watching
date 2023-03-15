@@ -33,7 +33,7 @@ const DangNhapScreen = (props) => {
             AsyncStorage.setItem('nguoidung', JSON.stringify(dataUser));
             setNguoidung(dataUser);
             setIsLoggedIn(true);
-            navigation.navigate("Trang Chủ");
+            navigation.navigate("Trang chủ");
         }
         setIsLoading(false);
     }
@@ -41,7 +41,7 @@ const DangNhapScreen = (props) => {
         <View>
             <ScrollView>
                 <View style={[styles.container, { minHeight: height }]}>
-                    <TouchableOpacity style={styles.boxIconBack} onPress={() => navigation.navigate("Trang Chủ")}>
+                    <TouchableOpacity style={styles.boxIconBack} onPress={() => navigation.navigate("Trang chủ")}>
                         <Ionicons name="arrow-back-circle" size={30} color="white" />
                     </TouchableOpacity>
                     <Image style={[styles.logo, { width: width / 2, height: width / 4 }]} source={require('../../assets/images/login_logo.png')}></Image>

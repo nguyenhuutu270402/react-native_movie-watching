@@ -10,6 +10,8 @@ import LichSuScreen from '../screens/LichSuScreen';
 import TrangChuStack from '../stacks/TrangChuStack';
 import DangNhapStack from '../stacks/DangNhapStack';
 import TestScreen from '../screens/TestScreen';
+import TaiKhoanScreen from '../screens/TaiKhoanScreen';
+
 
 
 
@@ -41,7 +43,7 @@ const DrawerNavigation = () => {
                 drawerInactiveTintColor: 'white'
             }}>
 
-            <Drawer.Screen name="Trang Chủ" component={TrangChuStack} options={{
+            <Drawer.Screen name="Trang chủ" component={TrangChuStack} options={{
                 headerShown: false,
                 drawerIcon: ({ color }) => (
                     <Ionicons name="home-outline" size={24} color={color} />
@@ -54,12 +56,15 @@ const DrawerNavigation = () => {
                     <MaterialIcons name="history" size={24} color={color} />
                 )
             }} />
-            <Drawer.Screen name="Lịch sử1" component={TestScreen} options={{
-                headerShown: true,
-                drawerIcon: ({ color }) => (
-                    <MaterialIcons name="history" size={24} color={color} />
-                )
-            }} />
+            {
+                isLoggedIn &&
+                <Drawer.Screen name="Tài khoản" component={TaiKhoanScreen} options={{
+                    headerShown: false,
+                    drawerIcon: ({ color }) => (
+                        <MaterialIcons name="switch-account" size={24} color={color} />
+                    )
+                }} />
+            }
             {
                 isLoggedIn ?
                     <Drawer.Screen name="Đăng xuất" component={LogOutStack} options={{

@@ -54,7 +54,7 @@ const DangKyScreen = (props) => {
         <View>
             <ScrollView>
                 <View style={[styles.container, { minHeight: height }]}>
-                    <TouchableOpacity style={styles.boxIconBack} onPress={() => navigation.navigate("Trang Chủ")}>
+                    <TouchableOpacity style={styles.boxIconBack} onPress={() => navigation.navigate("Trang chủ")}>
                         <Ionicons name="arrow-back-circle" size={30} color="white" />
                     </TouchableOpacity>
                     {/* <Image style={[styles.logo2,]} source={require('../../assets/images/healthicons_coins-outline.png')}></Image> */}

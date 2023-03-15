@@ -4,17 +4,18 @@ import { DrawerContentScrollView, DrawerItemList, DrawerItem } from '@react-navi
 import { Ionicons, AntDesign } from '@expo/vector-icons';
 import { TouchableOpacity } from 'react-native';
 import { ApiContext } from '../contexts/ApiContext';
-
+import { useNavigation } from '@react-navigation/native';
 //  https://static.chotot.com/storage/chotot-kinhnghiem/c2c/2019/10/nuoi-meo-can-gi-0-1024x713.jpg
 const CustomDrawer = (props) => {
     const { height, width } = useWindowDimensions();
     const heightBot = height - 195;
     const { nguoidung, isLoggedIn } = useContext(ApiContext);
+    const useNav = useNavigation();
     return (
         <View style={{ flex: 1 }}>
 
             <DrawerContentScrollView {...props} contentContainerStyle={{ backgroundColor: 'rgba(1,8,34,255)' }}>
-                <TouchableOpacity>
+                <TouchableOpacity onPress={() => isLoggedIn && useNav.navigate("Tài khoản")}>
                     <ImageBackground style={styles.bgrImage} source={require('../../assets/images/bg_drawer.jpg')}>
                         <View style={styles.boxTaiKhoan}>
                             {isLoggedIn ? (
@@ -33,11 +34,18 @@ const CustomDrawer = (props) => {
                                     <Ionicons name="person" size={60} color="white" />
                                 </View>
                             )}
-                            {nguoidung.tennguoidung == "" || nguoidung.avatar == "" ? (
-                                <Text style={styles.txtName}>{nguoidung.tennguoidung || 'Cập nhật tài khoản'}</Text>
-                            ) : (
-                                <Text style={styles.txtName}>Chưa đăng nhập</Text>
-                            )}
+                            {nguoidung.tennguoidung == "" || nguoidung.avatar == "" ?
+                                <Text style={styles.txtName}> Cập nhật tài khoản</Text>
+                                :
+                                <View>
+                                    {
+                                        nguoidung.tennguoidung != "" && nguoidung.tennguoidung ?
+                                            <Text style={styles.txtName}>{nguoidung.tennguoidung}</Text>
+                                            :
+                                            <Text style={styles.txtName}>Chưa đăng nhập</Text>
+                                    }
+                                </View>
+                            }
                             <Text style={styles.txtEmail}>{nguoidung.email || ''}</Text>
                         </View>
                     </ImageBackground>

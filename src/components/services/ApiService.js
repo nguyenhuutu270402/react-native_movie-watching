@@ -20,7 +20,7 @@ export const getTop10Phim = async () => {
 }
 export const updateUser = async (tennguoidung, avatar, id) => {
     const data = { tennguoidung, avatar, id }
-    const res = await axiosInstance.get(`api/update-user`, data);
+    const res = await axiosInstance.post(`api/update-user`, data);
     return res;
 }
 export const updatePasswordUser = async (matkhau, id) => {
