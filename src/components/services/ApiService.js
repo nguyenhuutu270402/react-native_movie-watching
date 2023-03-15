@@ -84,4 +84,9 @@ export const getOneTapById = async (idTap, idPhim, idNguoiDung) => {
     const res = await axiosInstance.get(`api/get-one-tap-by-id/${idTap}/${idPhim}/${idNguoiDung}`);
     return res;
 }
+export const getPhimTheoLoai = async (qrMidle) => {
+    const data = { qrMidle }
+    const res = await axiosInstance.post(`api/list-phim-theo-loai`, data);
+    return res;
+}
 

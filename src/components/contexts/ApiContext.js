@@ -4,7 +4,8 @@ import {
     getAllPhim, getListBinhLuanByIdPhim, getListLichSuTheoIdNguoiDung,
     getOnePhimById, getTop10Phim, addBinhLuan, addDanhGia, addLichSu,
     addLuotXem, addTheoDoi, addUser, updatePasswordUser, updateUser,
-    deleteLichSu, deleteTheoDoi, kiemTraTheoDoi, loginUser, getOneTapById
+    deleteLichSu, deleteTheoDoi, kiemTraTheoDoi, loginUser, getOneTapById,
+    getPhimTheoLoai
 } from '../services/ApiService';
 
 export const ApiContext = createContext();
@@ -175,6 +176,14 @@ export const ApiContextProvider = (props) => {
             console.log('onGetOneTapById error: ', error);
         }
     }
+    const onGetPhimTheoLoai = async (qrMidle) => {
+        try {
+            const res = await getPhimTheoLoai(qrMidle);
+            return res;
+        } catch (error) {
+            console.log('onGetPhimTheoLoai error: ', error);
+        }
+    }
 
     return (
         <ApiContext.Provider
@@ -183,7 +192,7 @@ export const ApiContextProvider = (props) => {
                 onGetListBinhLuanByIdPhim, onGetListLichSuTheoIdNguoiDung, onGetOnePhimById,
                 onGetTop10Phim, onAddBinhLuan, onAddDanhGia, onAddLichSu, onAddLuotXem, onAddTheoDoi,
                 onAddUser, onLoginUser, onUpdatePasswordUser, onUpdateUser, onKiemTraTheoDoi,
-                onDeleteTheoDoi, onDeleteLichSu, onGetOneTapById
+                onDeleteTheoDoi, onDeleteLichSu, onGetOneTapById, onGetPhimTheoLoai
             }}
         >
             {children}

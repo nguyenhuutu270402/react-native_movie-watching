@@ -1,27 +1,47 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { StyleSheet, Text, View, Image, TouchableOpacity, FlatList, useWindowDimensions } from 'react-native';
 import { ApiContext } from '../contexts/ApiContext';
-import { SwiperFlatList } from 'react-native-swiper-flatlist';
-import { Ionicons, FontAwesome } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 import SpinnerOverlay from 'react-native-loading-spinner-overlay';
 
-const TrangChuScreen = (props) => {
-    const { navigation } = props;
+const PhimTheoLoaiScreen = (props) => {
+    const { navigation, route: { params: { title, idDaoDien, idDienVien, idTheLoai, idQuocGia, namphathanh } } } = props;
     const { height, width } = useWindowDimensions();
-    const { onGetTop10Phim, onGetAllPhim } = useContext(ApiContext);
-    const [top10Phim, setTop10Phim] = useState([]);
-    const [allPhim, setAllPhim] = useState([]);
+    const { onGetPhimTheoLoai } = useContext(ApiContext);
+    const [listPhim, setListPhim] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
 
     async function fetchData() {
         try {
             setIsLoading(true);
-            const response1 = await onGetTop10Phim();
-            const response2 = await onGetAllPhim();
-            setAllPhim(response2.data);
-            setTop10Phim(response1.data);
-            setIsLoading(false);
+            let response;
+            if (idTheLoai) {
+                const qr = ` LEFT JOIN ct_theloai ON phim.id = ct_theloai.idphim 
+    LEFT JOIN theloai ON ct_theloai.idtheloai = theloai.id 
+    WHERE theloai.id = ${idTheLoai} `;
+                response = await onGetPhimTheoLoai(qr);
+            } else if (idDienVien) {
+                const qr = ` LEFT JOIN ct_dienvien ON phim.id = ct_dienvien.idphim 
+    LEFT JOIN dienvien ON ct_dienvien.iddienvien = dienvien.id 
+    WHERE dienvien.id = ${idDienVien} `;
+                response = await onGetPhimTheoLoai(qr);
+            } else if (idDaoDien) {
+                const qr = ` LEFT JOIN ct_daodien ON phim.id = ct_daodien.idphim 
+    LEFT JOIN daodien ON ct_daodien.iddaodien = daodien.id 
+    WHERE daodien.id = ${idDaoDien} `;
+                response = await onGetPhimTheoLoai(qr);
+            } else if (idQuocGia) {
+                const qr = ` LEFT JOIN ct_quocgia ON phim.id = ct_quocgia.idphim 
+    LEFT JOIN quocgia ON ct_quocgia.idquocgia = quocgia.id 
+    WHERE quocgia.id = ${idQuocGia} `;
+                response = await onGetPhimTheoLoai(qr);
+            } else if (namphathanh) {
+                const qr = ` WHERE phim.namphathanh = ${namphathanh} `;
+                response = await onGetPhimTheoLoai(qr);
+            }
 
+            setListPhim(response.data);
+            setIsLoading(false);
         } catch (error) {
             console.log(error);
         }
@@ -30,42 +50,8 @@ const TrangChuScreen = (props) => {
         fetchData();
     }, []);
 
-    const renderHeader = () => {
-        return (
-            <View>
-                <Text style={styles.textPhimDeCu}>Xem gì hôm nay?</Text>
-                <View style={styles.lineTextPhimDeCu} />
-                <SwiperFlatList
-                    autoplay
-                    autoplayDelay={5}
-                    autoplayLoop
-                    data={top10Phim}
-                    renderItem={renderTop10Phim}
 
-                />
-                <View style={styles.boxPhimMoi} >
-                    <View style={styles.lineTextPhimMoiCapNhat} />
-                    <Text style={styles.textPhimMoiCapNhat}>Phim mới cập nhật</Text>
-                    <View style={styles.lineTextPhimMoiCapNhat} />
-                </View>
-
-            </View>
-        )
-    }
-    const renderTop10Phim = ({ item }) => {
-        return (
-            <TouchableOpacity style={[styles.boxItem]} onPress={() => navigation.navigate('ChiTietScreen', { id: item.id })}>
-                <Image style={[styles.imageItemTop10, { width: width < 600 ? ((width / 2) - 12) : ((width / 3) - 12) }]} source={{ uri: item.image }} />
-                <View style={[styles.boxName]}>
-                    <Text style={[styles.txtName]} numberOfLines={2}>{item.tenphim}</Text>
-                </View>
-                <Text style={[styles.txtChatLuong]}>{item.phan_hoac_chatluong}</Text>
-                <Text style={[styles.txtThongTinTap]}>{item.thong_tin_tap}</Text>
-            </TouchableOpacity>
-        )
-
-    }
-    const renderItemAllPhim = ({ item }) => (
+    const renderItemPhim = ({ item }) => (
         <TouchableOpacity style={[styles.boxItem]} onPress={() => navigation.navigate('ChiTietScreen', { id: item.id })}>
             <Image style={[styles.imageItemTop10, { width: width < 600 ? ((width / 2) - 12) : ((width / 3) - 12) }]} source={{ uri: item.image }} />
             <View style={[styles.boxName]}>
@@ -75,25 +61,25 @@ const TrangChuScreen = (props) => {
             <Text style={[styles.txtThongTinTap]}>{item.thong_tin_tap}</Text>
         </TouchableOpacity>
     );
-
     return (
         <View style={styles.container}>
             <View style={styles.boxHeader}>
-                <TouchableOpacity style={styles.boxIconDrawer} onPress={() => navigation.openDrawer()}>
-                    <FontAwesome name="bars" size={24} color="white" />
+                <TouchableOpacity style={styles.boxIconDrawer} onPress={() => navigation.pop()}>
+                    <Ionicons name="arrow-back" size={28} color="white" />
                 </TouchableOpacity>
-                <Text style={styles.txtHeader}>Trang chủ</Text>
+                <Text style={styles.txtHeader} numberOfLines={1}>{title}</Text>
                 <TouchableOpacity style={styles.boxIconSearch} onPress={() => navigation.navigate('TimKiemScreen')}>
                     <Ionicons name="ios-search" size={28} color="white" />
                 </TouchableOpacity>
             </View>
+
+
             {
                 width < 600 ?
                     <FlatList
                         key={'1'}
-                        data={allPhim}
-                        renderItem={renderItemAllPhim}
-                        ListHeaderComponent={renderHeader}
+                        data={listPhim}
+                        renderItem={renderItemPhim}
                         keyExtractor={(item) => item.id}
                         showsVerticalScrollIndicator={false}
                         showsHorizontalScrollIndicator={false}
@@ -102,9 +88,8 @@ const TrangChuScreen = (props) => {
                     :
                     <FlatList
                         key={'2'}
-                        data={allPhim}
-                        renderItem={renderItemAllPhim}
-                        ListHeaderComponent={renderHeader}
+                        data={listPhim}
+                        renderItem={renderItemPhim}
                         keyExtractor={(item) => item.id}
                         showsVerticalScrollIndicator={false}
                         showsHorizontalScrollIndicator={false}
@@ -122,45 +107,9 @@ const TrangChuScreen = (props) => {
     )
 }
 
-export default TrangChuScreen
-
+export default PhimTheoLoaiScreen
 
 const styles = StyleSheet.create({
-    boxPhimMoi: {
-        marginVertical: 30,
-    },
-    lineTextPhimMoiCapNhat: {
-        width: '96%',
-        alignSelf: 'center',
-        marginHorizontal: 10,
-        height: 1,
-        backgroundColor: 'white',
-    },
-    textPhimMoiCapNhat: {
-        textTransform: 'uppercase',
-        fontSize: 20,
-        color: 'white',
-        marginLeft: 16,
-        // backgroundColor: 'red',
-        textAlign: 'center',
-        textAlignVertical: 'center',
-        height: 50,
-    },
-    lineTextPhimDeCu: {
-        width: '96%',
-        alignSelf: 'center',
-        marginHorizontal: 10,
-        height: 5,
-        backgroundColor: '#202025',
-        marginBottom: 10,
-    },
-    textPhimDeCu: {
-        textTransform: 'uppercase',
-        fontSize: 20,
-        color: 'white',
-        marginLeft: 16,
-        marginTop: 20,
-    },
     txtThongTinTap: {
         backgroundColor: 'rgba(254,215,0,255)',
         fontSize: 13,
@@ -234,7 +183,6 @@ const styles = StyleSheet.create({
         fontSize: 22,
         fontWeight: '500',
         color: 'white',
-        maxWidth: '70%',
     },
     boxHeader: {
         width: '100%',
@@ -251,4 +199,4 @@ const styles = StyleSheet.create({
         height: '100%',
         width: '100%',
     }
-});
+})

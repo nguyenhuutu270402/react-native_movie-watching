@@ -11,7 +11,7 @@ export default function App() {
   return (
     <ApiContextProvider>
       <NavigationContainer>
-        <StatusBar barStyle="light-content" hidden={false} translucent={true} />
+        <StatusBar barStyle="light-content" hidden={false} translucent={false} />
         <DrawerNavigation />
       </NavigationContainer>
     </ApiContextProvider>

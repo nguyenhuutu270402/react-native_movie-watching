@@ -231,7 +231,7 @@ const ChiTietScreen = (props) => {
                             <Text numberOfLines={1} style={styles.textGradient}>Chọn tập</Text>
                         </LinearGradient>
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={() => { addLuotXem(onePhim.ds_tap[onePhim.ds_tap.length - 1].id); navigation.navigate('ChiTietTapScreen', { id: onePhim.ds_tap[onePhim.ds_tap.length - 1].id, index: onePhim.ds_tap.length - 1 }) }}>
+                    <TouchableOpacity onPress={() => { addLuotXem(onePhim.ds_tap[onePhim.ds_tap.length - 1].id); navigation.navigate('ChiTietTapScreen', { idTap: onePhim.ds_tap[onePhim.ds_tap.length - 1].id, idPhim: onePhim.id, index: onePhim.ds_tap.length - 1 }) }}>
                         <LinearGradient
                             colors={['#d4df25', '#e53b03']}
                             start={{ x: 0, y: 0 }}
@@ -263,7 +263,7 @@ const ChiTietScreen = (props) => {
         </TouchableOpacity>
 
     );
-    const rederFooter = () => {
+    const renderFooter = () => {
         return (
             <View style={styles.renderFooterContainer}>
                 {
@@ -306,7 +306,7 @@ const ChiTietScreen = (props) => {
                     <View style={styles.lineThongTinPhim} />
                     <View style={styles.boxTitleThongTin}>
                         <Text style={styles.titleThongTin}>Năm: </Text>
-                        <TouchableOpacity>
+                        <TouchableOpacity onPress={() => navigation.navigate('PhimTheoLoaiScreen', { title: onePhim.namphathanh, namphathanh: onePhim.namphathanh })}>
                             <Text style={styles.textTenKhac}>{onePhim.namphathanh}</Text>
                         </TouchableOpacity>
                     </View>
@@ -318,7 +318,9 @@ const ChiTietScreen = (props) => {
                                 <Text style={styles.titleThongTin}>Đạo diễn:</Text>
                                 {
                                     onePhim.ds_daodien.map((item, index) => (
-                                        <TouchableOpacity key={item.id} style={{ flexDirection: 'row' }}>
+                                        <TouchableOpacity
+                                            onPress={() => navigation.navigate('PhimTheoLoaiScreen', { title: item.tendaodien, idDaoDien: item.id })}
+                                            key={item.id} style={{ flexDirection: 'row' }}>
                                             <Text style={styles.textTenKhac}>{item.tendaodien}</Text>
                                             {
                                                 index < (onePhim.ds_daodien.length - 1) &&
@@ -338,10 +340,56 @@ const ChiTietScreen = (props) => {
                                 <Text style={styles.titleThongTin}>Diễn viên:</Text>
                                 {
                                     onePhim.ds_dienvien.map((item, index) => (
-                                        <TouchableOpacity key={item.id} style={{ flexDirection: 'row' }}>
+                                        <TouchableOpacity
+                                            onPress={() => navigation.navigate('PhimTheoLoaiScreen', { title: item.tendienvien, idDienVien: item.id })}
+                                            key={item.id} style={{ flexDirection: 'row' }}>
                                             <Text style={styles.textTenKhac}>{item.tendienvien}</Text>
                                             {
                                                 index < (onePhim.ds_dienvien.length - 1) &&
+                                                <Text style={{ color: '#c59306' }}>,  </Text>
+                                            }
+                                        </TouchableOpacity>
+                                    ))
+                                }
+                            </View>
+                        </View>
+                    }
+                    {
+                        onePhim.ds_theloai &&
+                        <View>
+                            <View style={styles.lineThongTinPhim} />
+                            <View style={styles.boxTitleThongTin}>
+                                <Text style={styles.titleThongTin}>Thể loại:</Text>
+                                {
+                                    onePhim.ds_theloai.map((item, index) => (
+                                        <TouchableOpacity
+                                            onPress={() => navigation.navigate('PhimTheoLoaiScreen', { title: item.tentheloai, idTheLoai: item.id })}
+                                            key={item.id} style={{ flexDirection: 'row' }}>
+                                            <Text style={styles.textTenKhac}>{item.tentheloai}</Text>
+                                            {
+                                                index < (onePhim.ds_theloai.length - 1) &&
+                                                <Text style={{ color: '#c59306' }}>,  </Text>
+                                            }
+                                        </TouchableOpacity>
+                                    ))
+                                }
+                            </View>
+                        </View>
+                    }
+                    {
+                        onePhim.ds_quocgia &&
+                        <View>
+                            <View style={styles.lineThongTinPhim} />
+                            <View style={styles.boxTitleThongTin}>
+                                <Text style={styles.titleThongTin}>Quốc gia:</Text>
+                                {
+                                    onePhim.ds_quocgia.map((item, index) => (
+                                        <TouchableOpacity
+                                            onPress={() => navigation.navigate('PhimTheoLoaiScreen', { title: item.tenquocgia, idQuocGia: item.id })}
+                                            key={item.id} style={{ flexDirection: 'row' }}>
+                                            <Text style={styles.textTenKhac}>{item.tenquocgia}</Text>
+                                            {
+                                                index < (onePhim.ds_quocgia.length - 1) &&
                                                 <Text style={{ color: '#c59306' }}>,  </Text>
                                             }
                                         </TouchableOpacity>
@@ -429,7 +477,7 @@ const ChiTietScreen = (props) => {
                 <TouchableOpacity style={styles.boxIconDrawer} onPress={() => navigation.pop()}>
                     <Ionicons name="arrow-back" size={28} color="white" />
                 </TouchableOpacity>
-                <Text style={styles.txtHeader}>Thông tin phim</Text>
+                <Text style={styles.txtHeader} numberOfLines={1}>{onePhim.tenphim}</Text>
                 <TouchableOpacity style={styles.boxIconSearch} onPress={() => navigation.navigate('TimKiemScreen')}>
                     <Ionicons name="ios-search" size={28} color="white" />
                 </TouchableOpacity>
@@ -441,7 +489,7 @@ const ChiTietScreen = (props) => {
                         data={onePhim.ds_tap}
                         renderItem={isShowListTap ? renderItem : () => <View />}
                         ListHeaderComponent={renderHeader}
-                        ListFooterComponent={rederFooter}
+                        ListFooterComponent={renderFooter}
                         keyExtractor={(item) => item.id}
                         showsVerticalScrollIndicator={false}
                         showsHorizontalScrollIndicator={false}
@@ -453,7 +501,7 @@ const ChiTietScreen = (props) => {
                         data={onePhim.ds_tap}
                         renderItem={isShowListTap ? renderItem : () => <View />}
                         ListHeaderComponent={renderHeader}
-                        ListFooterComponent={rederFooter}
+                        ListFooterComponent={renderFooter}
                         keyExtractor={(item) => item.id}
                         showsVerticalScrollIndicator={false}
                         showsHorizontalScrollIndicator={false}
@@ -842,14 +890,14 @@ const styles = StyleSheet.create({
         opacity: 0.1,
     },
     boxIconSearch: {
-        position: 'absolute',
-        right: 16,
-        top: 36,
+        // position: 'absolute',
+        // right: 16,
+        // top: 16,
     },
     boxIconDrawer: {
-        position: 'absolute',
-        left: 16,
-        top: 36,
+        // position: 'absolute',
+        // left: 16,
+        // top: 16,
     },
     txtHeader: {
         alignSelf: 'center',
@@ -858,14 +906,17 @@ const styles = StyleSheet.create({
         fontSize: 22,
         fontWeight: '500',
         color: 'white',
-        paddingTop: 20,
+        maxWidth: '70%',
     },
     boxHeader: {
         width: '100%',
         position: 'relative',
-        height: 80,
+        height: 54,
         backgroundColor: '#202025',
-        alignItems: 'baseline',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        paddingHorizontal: 16,
     },
     container: {
         backgroundColor: '#161619',

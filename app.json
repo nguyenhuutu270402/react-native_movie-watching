@@ -4,14 +4,6 @@
     "slug": "react-native_movie-watching",
     "version": "1.0.0",
     "orientation": "default",
-    "plugins": [
-      [
-        "expo-screen-orientation",
-        {
-          "initialOrientation": "DEFAULT"
-        }
-      ]
-    ],
     "icon": "./assets/logo.jpg",
     "userInterfaceStyle": "light",
     "splash": {
@@ -21,7 +13,7 @@
     },
     "androidStatusBar": {
       "backgroundColor": "#000",
-      "translucent": true
+      "translucent": false
     },
     "androidNavigationBar": {
       // "visible": "sticky-immersive"
