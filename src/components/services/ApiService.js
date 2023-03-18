@@ -25,7 +25,7 @@ export const updateUser = async (tennguoidung, avatar, id) => {
 }
 export const updatePasswordUser = async (matkhau, id) => {
     const data = { matkhau, id }
-    const res = await axiosInstance.get(`api/update-password-user`, data);
+    const res = await axiosInstance.post(`api/update-password-user`, data);
     return res;
 }
 export const getOnePhimById = async (idPhim, idNguoiDung) => {
@@ -87,6 +87,11 @@ export const getOneTapById = async (idTap, idPhim, idNguoiDung) => {
 export const getPhimTheoLoai = async (qrMidle) => {
     const data = { qrMidle }
     const res = await axiosInstance.post(`api/list-phim-theo-loai`, data);
+    return res;
+}
+export const getPhimXepHang = async (qrMidle) => {
+    const data = { qrMidle }
+    const res = await axiosInstance.post(`api/list-phim-xep-hang`, data);
     return res;
 }
 

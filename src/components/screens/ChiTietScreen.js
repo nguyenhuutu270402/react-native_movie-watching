@@ -15,7 +15,7 @@ const ChiTietScreen = (props) => {
         onKiemTraTheoDoi, onAddLichSu, onAddBinhLuan, onGetListBinhLuanByIdPhim } = useContext(ApiContext);
     const [isShowModal, setIsShowModal] = useState(false);
     const [rating, setRating] = useState(0);
-    const [snapPoints, setSnapPoints] = useState(["1%"]);
+    const [snapPoints, setSnapPoints] = useState([0.1, "70%"]);
     const [onePhim, setOnePhim] = useState({});
     const [isLoading, setIsLoading] = useState(false);
     const [isShowListTap, setIsShowListTap] = useState(false);
@@ -42,8 +42,8 @@ const ChiTietScreen = (props) => {
             } else {
                 response1 = await onGetOnePhimById(id, 0);
             }
-            sheetRef.current?.close();
-            setSnapPoints(["70%"]);
+            // sheetRef.current?.close();
+            // setSnapPoints(["70%"]);
             setOnePhim(response1.data);
             Image.getSize(response1.data.image, (Width, Height) => {
                 setAspectRatio(Width / Height);
@@ -213,7 +213,7 @@ const ChiTietScreen = (props) => {
             ToastAndroid.show('Cập nhật tài khoản để sử dụng chức năng này', ToastAndroid.CENTER);
             return;
         }
-        handleSnapPress(0);
+        handleSnapPress(1);
     }
     const renderHeader = () => {
         return (

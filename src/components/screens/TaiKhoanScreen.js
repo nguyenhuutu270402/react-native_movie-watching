@@ -150,7 +150,7 @@ const TaiKhoanScreen = (props) => {
                         <Text style={styles.textPickImage}>Chọn ảnh</Text>
                     </TouchableOpacity>
                     <View style={styles.boxTextInput}>
-                        <MaterialIcons style={styles.iconTextInput} name="drive-file-rename-outline" size={24} color="#13adb6" />
+                        <MaterialIcons style={styles.iconTextInput} name="drive-file-rename-outline" size={24} color="#999" />
                         <TextInput
                             style={styles.textInputTen}
                             placeholder='Nhập tên người dùng'
@@ -162,6 +162,9 @@ const TaiKhoanScreen = (props) => {
 
                     <TouchableOpacity style={styles.btLuu} onPress={() => uploadImage()}>
                         <Text style={styles.textLuu}>Lưu</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.btDangKy} onPress={() => navigation.navigate('DoiMatKhauScreen')}>
+                        <Text style={styles.textDangKy}>Đổi mật khẩu?</Text>
                     </TouchableOpacity>
                 </View>
 
@@ -180,19 +183,31 @@ const TaiKhoanScreen = (props) => {
 export default TaiKhoanScreen
 
 const styles = StyleSheet.create({
+    textDangKy: {
+        color: '#20ab7d',
+        fontSize: 16,
+        fontWeight: '300',
+        marginLeft: 10,
+    },
+    btDangKy: {
+        marginRight: '9%',
+        alignSelf: 'flex-end',
+        marginTop: 10
+    },
     textLuu: {
         fontSize: 18,
         color: 'white',
         fontWeight: '600',
     },
     btLuu: {
-        width: '70%',
-        height: 46,
-        backgroundColor: '#13adb6',
-        alignItems: 'center',
+        width: '85%',
+        height: 60,
+        backgroundColor: '#35343b',
         justifyContent: 'center',
-        borderRadius: 10,
-        marginTop: 40,
+        alignItems: 'center',
+        marginTop: 60,
+        borderRadius: 16,
+        elevation: 10,
     },
     boxTextInput: {
         flexDirection: 'row',
@@ -210,7 +225,7 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         paddingLeft: 50,
         fontSize: 16,
-        borderColor: 'white',
+        borderColor: '#35343b',
         fontWeight: '600',
         color: 'white'
     },
@@ -233,6 +248,7 @@ const styles = StyleSheet.create({
         marginTop: 50,
         borderRadius: 10,
         resizeMode: 'cover',
+        borderColor: '#35343b'
     },
     boxBody: {
         alignItems: 'center',

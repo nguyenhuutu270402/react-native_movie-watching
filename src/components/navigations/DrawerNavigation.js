@@ -6,10 +6,10 @@ import { Ionicons, MaterialIcons, AntDesign, Feather } from '@expo/vector-icons'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ApiContext } from '../contexts/ApiContext';
 
-import LichSuScreen from '../screens/LichSuScreen';
+import XepHangStack from '../stacks/XepHangStack';
 import TrangChuStack from '../stacks/TrangChuStack';
 import DangNhapStack from '../stacks/DangNhapStack';
-import TaiKhoanScreen from '../screens/TaiKhoanScreen';
+import TaiKhoanStack from '../stacks/TaiKhoanStack';
 import LichSuStack from '../stacks/LichSuStack';
 import TheoDoiStack from '../stacks/TheoDoiStack';
 
@@ -51,6 +51,12 @@ const DrawerNavigation = () => {
                 )
             }}
             />
+            <Drawer.Screen name="Xếp hạng" component={XepHangStack} options={{
+                headerShown: false,
+                drawerIcon: ({ color }) => (
+                    <Feather name="bar-chart" size={24} color={color} />
+                )
+            }} />
             <Drawer.Screen name="Lịch sử" component={LichSuStack} options={{
                 headerShown: false,
                 drawerIcon: ({ color }) => (
@@ -65,7 +71,7 @@ const DrawerNavigation = () => {
             }} />
             {
                 isLoggedIn &&
-                <Drawer.Screen name="Tài khoản" component={TaiKhoanScreen} options={{
+                <Drawer.Screen name="Tài khoản" component={TaiKhoanStack} options={{
                     headerShown: false,
                     drawerIcon: ({ color }) => (
                         <MaterialIcons name="switch-account" size={24} color={color} />
