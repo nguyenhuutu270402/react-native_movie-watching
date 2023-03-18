@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import { StyleSheet, Text, View, Image, TouchableOpacity, FlatList, useWindowDimensions, TextInput } from 'react-native';
+import { StyleSheet, Text, View, Image, TouchableOpacity, FlatList, Modal, Pressable, useWindowDimensions, TextInput } from 'react-native';
 import { ApiContext } from '../contexts/ApiContext';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, Feather, AntDesign } from '@expo/vector-icons';
 import SpinnerOverlay from 'react-native-loading-spinner-overlay';
 import { color } from 'react-native-reanimated';
 
@@ -12,6 +12,7 @@ const TimKiemScreen = (props) => {
     const { onGetPhimTheoLoai } = useContext(ApiContext);
     const [listPhim, setListPhim] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
+    const [isShowInfor, setIsShowInfor] = useState(false);
     const timeout = useRef(null);
 
     const onSearch = async (text) => {
@@ -21,6 +22,11 @@ const TimKiemScreen = (props) => {
                 var searchArray = text.toLowerCase().split(" ");
                 var qr = `WHERE 
                 concat(phim.tenphim, '<>', phim.tenkhac, '<>', phim.namphathanh, '<>', 
+                (   CASE    
+                    WHEN dinhdang = 1 THEN 'Phim lẻ'
+                    ELSE 'Phim bộ'
+                    END
+                ),'<>', 
                 (
                     SELECT STRING_AGG(theloai.tentheloai, ', ') 
                     FROM theloai
@@ -38,10 +44,21 @@ const TimKiemScreen = (props) => {
                     FROM daodien
                     INNER JOIN ct_daodien ON daodien.id = ct_daodien.iddaodien
                     WHERE ct_daodien.idphim = phim.id
+                ) , '<>', 
+                (
+                    SELECT STRING_AGG(quocgia.tenquocgia, ', ') 
+                    FROM quocgia
+                    INNER JOIN ct_quocgia ON quocgia.id = ct_quocgia.idquocgia
+                    WHERE ct_quocgia.idphim = phim.id
                 )) ILIKE '%${searchArray[0]}%'`;
                 for (let index = 1; index < searchArray.length; index++) {
                     const element = searchArray[index];
                     qr = qr + ` AND concat(phim.tenphim, '<>', phim.tenkhac, '<>', phim.namphathanh, '<>', 
+                    (   CASE    
+                        WHEN dinhdang = 1 THEN 'Phim lẻ'
+                        ELSE 'Phim bộ'
+                        END
+                    ),'<>', 
                     (
                         SELECT STRING_AGG(theloai.tentheloai, ', ') 
                         FROM theloai
@@ -59,6 +76,13 @@ const TimKiemScreen = (props) => {
                         FROM daodien
                         INNER JOIN ct_daodien ON daodien.id = ct_daodien.iddaodien
                         WHERE ct_daodien.idphim = phim.id
+                    )
+                    , '<>', 
+                    (
+                        SELECT STRING_AGG(quocgia.tenquocgia, ', ') 
+                        FROM quocgia
+                        INNER JOIN ct_quocgia ON quocgia.id = ct_quocgia.idquocgia
+                        WHERE ct_quocgia.idphim = phim.id
                     )) ILIKE '%${element}%'`
                 }
 
@@ -86,13 +110,13 @@ const TimKiemScreen = (props) => {
                 </TouchableOpacity>
                 <TextInput
                     style={styles.textInputSearch}
-                    placeholder='Tên phim, thể loại, diễn viên, năm...'
+                    placeholder='Tìm kiếm...'
                     cursorColor={'#777'}
                     placeholderTextColor={'#777'}
                     onChangeText={text => onSearch(text)}
                     numberOfLines={1} />
-                <TouchableOpacity style={styles.boxIconSearch}>
-                    <Ionicons name="ios-search" size={28} color="white" />
+                <TouchableOpacity style={styles.boxIconSearch} onPress={() => setIsShowInfor(true)}>
+                    <AntDesign name="infocirlceo" size={24} color="white" />
                 </TouchableOpacity>
             </View>
             {
@@ -117,6 +141,18 @@ const TimKiemScreen = (props) => {
                         numColumns={3}
                     />
             }
+            <Modal animationType="fade" transparent={true} visible={isShowInfor} onRequestClose={() => setIsShowInfor(false)}>
+                <Pressable style={styles.containerModal} onPress={() => setIsShowInfor(false)}>
+                    <View style={styles.modalInfor}>
+                        <View style={styles.boxThongTin}>
+                            <AntDesign name="infocirlceo" size={22} color="white" />
+                            <Text style={styles.txtThongTin}>Hỗ trợ</Text>
+                        </View>
+                        <Text style={styles.txtInfor}>Có thể tìm kiếm đa dạng, không phân biệt hoa thường (Tên phim, thể loại, đạo diễn, diễn viên, năm, quốc gia...)</Text>
+                        <Text style={styles.txtVDInfor}>VD: Phim lẻ người nhện hành động viễn tưởng chiếu rạp 2021 mỹ tom holland</Text>
+                    </View>
+                </Pressable>
+            </Modal>
             <SpinnerOverlay
                 visible={isLoading}
                 textStyle={{ color: '#FFF' }}
@@ -131,6 +167,43 @@ const TimKiemScreen = (props) => {
 export default TimKiemScreen
 
 const styles = StyleSheet.create({
+    txtThongTin: {
+        color: 'white',
+        fontSize: 18,
+        marginLeft: 8,
+    },
+    boxThongTin: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginVertical: 16,
+    },
+    txtVDInfor: {
+        color: 'rgba(255,255,255,0.8)',
+        // marginVertical: 10,
+        marginTop: 10,
+        marginBottom: 20,
+    },
+    txtInfor: {
+        color: 'rgba(255,255,255,0.8)',
+    },
+    modalInfor: {
+        width: '90%',
+        backgroundColor: '#202025',
+        alignContent: 'center',
+        alignSelf: 'center',
+        borderRadius: 10,
+        // minHeight: '30%',
+        paddingHorizontal: 30,
+        // paddingVertical: 20,
+    },
+    containerModal: {
+        width: '100%',
+        height: '100%',
+        backgroundColor: 'rgba(0,0,0,0.2)',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
     textInputSearch: {
         fontSize: 16,
         fontWeight: '400',
